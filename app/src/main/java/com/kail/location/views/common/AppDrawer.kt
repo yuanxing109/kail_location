@@ -160,12 +160,6 @@ fun AppDrawer(
             style = MaterialTheme.typography.labelSmall
         )
         NavigationDrawerItem(
-            label = { Text(stringResource(R.string.nav_menu_upgrade)) },
-            icon = { Icon(painterResource(R.drawable.ic_menu_upgrade), contentDescription = null) },
-            selected = false,
-            onClick = { scope.launch { drawerState.close(); onNavigate(R.id.nav_update) } }
-        )
-        NavigationDrawerItem(
             label = { Text(stringResource(R.string.nav_menu_contact)) },
             icon = { Icon(painterResource(R.drawable.ic_contact), contentDescription = null) },
             selected = false,

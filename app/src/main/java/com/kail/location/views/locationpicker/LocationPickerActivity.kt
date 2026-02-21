@@ -214,15 +214,11 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
         // initSearchDataBase()
         // initSearchView() // TODO: Migrate Search
 
-        /* 检查更新 */
-        if (sharedPreferences.getBoolean("setting_check_update", true)) {
-            checkUpdate(true)
-        }
+        /* 移除选点页的更新检测 */
 
         setContent {
             val isMocking by viewModel.isMocking.collectAsState()
             val selectedPoi by viewModel.selectedPoi.collectAsState()
-            val updateInfo by viewModel.updateInfo.collectAsState()
             val searchResults by viewModel.searchResults.collectAsState()
             val runMode by viewModel.runMode.collectAsState()
             val targetLocation by viewModel.targetLocation.collectAsState()
@@ -319,20 +315,13 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
                                 Toast.makeText(this, "无法打开浏览器", Toast.LENGTH_SHORT).show()
                             }
                         }
-                            R.id.nav_update -> checkUpdate(false)
-                            // TODO: Add other navigation items
                         }
+                            // TODO: Add other navigation items
                     },
                     appVersion = packageManager.getPackageInfo(packageName, 0).versionName ?: "",
-                    updateInfo = updateInfo,
-                    onUpdateDismiss = { viewModel.setUpdateInfo(null) },
-                    onUpdateConfirm = { url ->
-                        downloadApk(url)
-                        viewModel.setUpdateInfo(null)
-                    },
-                    searchResults = searchResults,
                     onSearch = { query -> viewModel.search(query, mCurrentCity) },
                     onClearSearchResults = { viewModel.clearSearchResults() },
+                    searchResults = searchResults,
                     onSelectSearchResult = { item ->
                         val lng = item[LocationPickerViewModel.POI_LONGITUDE].toString()
                         val lat = item[LocationPickerViewModel.POI_LATITUDE].toString()

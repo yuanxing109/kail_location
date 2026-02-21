@@ -77,20 +77,30 @@ fun RouteSimulationScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val isDownloading by viewModel.isDownloading.collectAsState()
+    val downloadProgress by viewModel.downloadProgress.collectAsState()
+    val installUri by viewModel.installUri.collectAsState()
     if (updateInfo != null) {
-        UpdateDialog(
+        com.kail.location.views.common.UpdateDownloadDialog(
             info = updateInfo!!,
+            downloading = isDownloading,
+            progress = downloadProgress,
             onDismiss = { viewModel.dismissUpdateDialog() },
-            onConfirm = {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(updateInfo!!.downloadUrl))
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                viewModel.dismissUpdateDialog()
-            }
+            onStartDownload = { viewModel.startUpdateDownload(context) }
         )
+    }
+    if (installUri != null) {
+        LaunchedEffect(installUri) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(installUri, "application/vnd.android.package-archive")
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                context.startActivity(intent)
+            } catch (_: Exception) {}
+            viewModel.clearInstallUri()
+            viewModel.dismissUpdateDialog()
+        }
     }
 
     ModalNavigationDrawer(

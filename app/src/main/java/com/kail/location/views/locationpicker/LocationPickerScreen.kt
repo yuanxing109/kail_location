@@ -57,9 +57,6 @@ fun LocationPickerScreen(
     onMapTypeChange: (Int) -> Unit,
     onNavigate: (Int) -> Unit,
     appVersion: String,
-    updateInfo: UpdateInfo?,
-    onUpdateDismiss: () -> Unit,
-    onUpdateConfirm: (String) -> Unit,
     searchResults: List<Map<String, Any>>?,
     onSearch: (String) -> Unit,
     onClearSearchResults: () -> Unit,
@@ -290,13 +287,7 @@ fun LocationPickerScreen(
         )
     }
 
-    if (updateInfo != null) {
-        UpdateDialog(
-            info = updateInfo,
-            onDismiss = onUpdateDismiss,
-            onConfirm = { onUpdateConfirm(updateInfo.downloadUrl) }
-        )
-    }
+    // 移除选点页的更新检测与弹窗
 }
 
 /**

@@ -50,6 +50,13 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
      */
     val updateInfo: StateFlow<UpdateInfo?> = _updateInfo.asStateFlow()
 
+    private val _isDownloading = MutableStateFlow(false)
+    val isDownloading: StateFlow<Boolean> = _isDownloading.asStateFlow()
+    private val _downloadProgress = MutableStateFlow(0)
+    val downloadProgress: StateFlow<Int> = _downloadProgress.asStateFlow()
+    private val _installUri = MutableStateFlow<android.net.Uri?>(null)
+    val installUri: StateFlow<android.net.Uri?> = _installUri.asStateFlow()
+
     private val _isSimulating = MutableStateFlow(false)
     val isSimulating: StateFlow<Boolean> = _isSimulating.asStateFlow()
     private val _isPaused = MutableStateFlow(false)
@@ -177,6 +184,59 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
      */
     fun dismissUpdateDialog() {
         _updateInfo.value = null
+    }
+    
+    fun clearInstallUri() {
+        _installUri.value = null
+    }
+
+    fun startUpdateDownload(context: Context) {
+        val info = _updateInfo.value ?: return
+        if (_isDownloading.value) return
+        _isDownloading.value = true
+        _downloadProgress.value = 0
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val client = okhttp3.OkHttpClient()
+                val request = okhttp3.Request.Builder().url(info.downloadUrl).build()
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) throw java.io.IOException("Unexpected code $response")
+                val body = response.body ?: throw java.io.IOException("Empty body")
+                val total = body.contentLength().takeIf { it > 0 } ?: -1L
+                val dir = java.io.File(context.getExternalFilesDir(null), "Updates")
+                if (!dir.exists()) dir.mkdirs()
+                val outFile = java.io.File(dir, info.filename)
+                body.byteStream().use { input ->
+                    java.io.FileOutputStream(outFile).use { output ->
+                        val buffer = ByteArray(8 * 1024)
+                        var bytesRead: Int
+                        var sum = 0L
+                        while (true) {
+                            bytesRead = input.read(buffer)
+                            if (bytesRead == -1) break
+                            output.write(buffer, 0, bytesRead)
+                            sum += bytesRead
+                            if (total > 0) {
+                                val pct = ((sum * 100) / total).toInt().coerceIn(0, 100)
+                                _downloadProgress.value = pct
+                            }
+                        }
+                        output.flush()
+                    }
+                }
+                _downloadProgress.value = 100
+                val uri = androidx.core.content.FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileProvider",
+                    outFile
+                )
+                _installUri.value = uri
+            } catch (_: Exception) {
+                _isDownloading.value = false
+            } finally {
+                _isDownloading.value = false
+            }
+        }
     }
 
     fun setSimulating(value: Boolean) {

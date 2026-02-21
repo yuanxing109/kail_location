@@ -19,6 +19,11 @@ import com.kail.location.views.theme.locationTheme
 import com.kail.location.utils.GoUtils
 import com.kail.location.R
 import java.util.ArrayList
+import androidx.activity.viewModels
+import com.kail.location.viewmodels.WelcomeViewModel
+import com.kail.location.views.common.UpdateDownloadDialog
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 
 /**
  * 欢迎/启动页面活动
@@ -31,6 +36,7 @@ class WelcomeActivity : AppCompatActivity() {
     private lateinit var preferences: SharedPreferences
     private var mAgreement = false
     private var mPrivacy = false
+    private val viewModel: WelcomeViewModel by viewModels()
 
     companion object {
         private const val KEY_ACCEPT_AGREEMENT = "KEY_ACCEPT_AGREEMENT"
@@ -62,6 +68,11 @@ class WelcomeActivity : AppCompatActivity() {
                 var showAgreementDialog by remember { mutableStateOf(false) }
                 var showPrivacyDialog by remember { mutableStateOf(false) }
 
+                val updateInfo by viewModel.updateInfo.collectAsState()
+                val isDownloading by viewModel.isDownloading.collectAsState()
+                val downloadProgress by viewModel.downloadProgress.collectAsState()
+                val installUri by viewModel.installUri.collectAsState()
+
                 WelcomeScreen(
                     onStartClick = { startMainActivity(isChecked) },
                     onAgreementClick = { showAgreementDialog = true },
@@ -83,6 +94,33 @@ class WelcomeActivity : AppCompatActivity() {
                         }
                     }
                 )
+
+                LaunchedEffect(Unit) {
+                    viewModel.checkUpdate(this@WelcomeActivity, true)
+                }
+
+                if (updateInfo != null) {
+                    UpdateDownloadDialog(
+                        info = updateInfo!!,
+                        downloading = isDownloading,
+                        progress = downloadProgress,
+                        onDismiss = { viewModel.dismissUpdate() },
+                        onStartDownload = { viewModel.startDownload(this@WelcomeActivity) }
+                    )
+                }
+                if (installUri != null) {
+                    LaunchedEffect(installUri) {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(installUri, "application/vnd.android.package-archive")
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            startActivity(intent)
+                        } catch (_: Exception) {}
+                        viewModel.clearInstallUri()
+                        viewModel.dismissUpdate()
+                    }
+                }
 
                 if (showAgreementDialog) {
                     AgreementDialog(

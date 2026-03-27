@@ -1,16 +1,18 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.10)
+project(kail_gait_sim C CXX)
 
-project("kail_native_hook")
-
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(dobby REQUIRED CONFIG)
+add_library(kail_gait_sim SHARED
+    simulate.cpp
+    config.cpp
+    gait_jni.cpp
+)
 
-add_library(kail_native_hook SHARED
-        main.cpp
-        elf_util.cpp
-        sensor_hook.cpp)
+target_include_directories(kail_gait_sim PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(kail_native_hook android log)
-target_link_libraries(kail_native_hook dobby::dobby)
+find_library(log-lib log)
+
+find_package(dobby CONFIG REQUIRED)
+target_link_libraries(kail_gait_sim PRIVATE ${log-lib} dobby::dobby)

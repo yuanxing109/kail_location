@@ -22,7 +22,7 @@ data class RouteInfo(
  * @property mode 交通方式（如步行、骑行）。
  * @property speedFluctuation 是否模拟速度波动。
  * @property stepFreqSimulation 是否模拟步频。
- * @property stepFreq 步频数值。
+ * @property stepCadenceSpm 步频（步/分钟）。
  * @property isLoop 是否循环模拟。
  * @property nativeSensorHook 是否启用 Native 传感器 Hook。
  */
@@ -31,7 +31,7 @@ data class SimulationSettings(
     var mode: TransportMode = TransportMode.Bike,
     var speedFluctuation: Boolean = true,
     var stepFreqSimulation: Boolean = false,
-    var stepFreq: Float = 2.5f,
+    var stepCadenceSpm: Float = 120f,
     var isLoop: Boolean = true,
     var nativeSensorHook: Boolean = false
 )

@@ -323,13 +323,12 @@ class ServiceGo : Service() {
                         try {
                             stepEnabledCache = intent.getBooleanExtra(EXTRA_STEP_ENABLED, stepEnabledCache)
                             stepFreqCache = intent.getFloatExtra(EXTRA_STEP_FREQ, stepFreqCache.toFloat()).toDouble()
-                            if (mRunMode == "root") {
-                                portalStartIfNeeded()
-                                portalSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache) }
-                                portalSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
-                            }
-                            com.kail.location.xposed.NativeHook.setStepConfigSafe(stepEnabledCache, stepFreqCache.toFloat())
-                            KailLog.i(this, "ServiceGo", "step simulation updated: enabled=$stepEnabledCache, freq=$stepFreqCache")
+                             if (mRunMode == "root") {
+                                 portalStartIfNeeded()
+                                 portalSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache) }
+                                 portalSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
+                             }
+                             KailLog.i(this, "ServiceGo", "step simulation updated: enabled=$stepEnabledCache, freq=$stepFreqCache")
                         } catch (e: Exception) {
                             KailLog.e(this, "ServiceGo", "set_step error: ${e.message}")
                         }
@@ -338,7 +337,6 @@ class ServiceGo : Service() {
                     CONTROL_SET_NATIVE_HOOK -> {
                         try {
                             val enabled = intent.getBooleanExtra(EXTRA_NATIVE_SENSOR_HOOK, false)
-                            com.kail.location.xposed.NativeHook.setStepConfigSafe(enabled, stepFreqCache.toFloat())
                             KailLog.i(this, "ServiceGo", "native hook status updated to $enabled")
                         } catch (e: Exception) {
                             KailLog.e(this, "ServiceGo", "set_native_hook error: ${e.message}")
@@ -351,10 +349,6 @@ class ServiceGo : Service() {
             stepFreqCache = intent.getFloatExtra(EXTRA_STEP_FREQ, 0f).toDouble()
             speedFluctuation = intent.getBooleanExtra(EXTRA_SPEED_FLUCTUATION, false)
             val nativeHookEnabled = intent.getBooleanExtra(EXTRA_NATIVE_SENSOR_HOOK, false)
-            com.kail.location.xposed.NativeHook.setStepConfigSafe(nativeHookEnabled, stepFreqCache.toFloat())
-            if (nativeHookEnabled) {
-                com.kail.location.xposed.NativeHook.startHook()
-            }
         }
         // Ensure startForeground is called to prevent crash (ForegroundServiceDidNotStartInTimeException)
         // even if onCreate was skipped (service already running)

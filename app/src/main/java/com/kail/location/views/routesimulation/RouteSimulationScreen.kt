@@ -238,7 +238,7 @@ fun RouteSimulationScreen(
                 if (settings.isLoop != it.isLoop) viewModel.updateLoop(it.isLoop)
                 if (settings.speedFluctuation != it.speedFluctuation) viewModel.updateSpeedFluctuation(it.speedFluctuation)
                 if (settings.stepFreqSimulation != it.stepFreqSimulation) viewModel.updateStepFreqSimulation(it.stepFreqSimulation)
-                if (settings.stepFreq != it.stepFreq) viewModel.updateStepFreq(it.stepFreq)
+                if (settings.stepCadenceSpm != it.stepCadenceSpm) viewModel.updateStepCadenceSpm(it.stepCadenceSpm)
                 if (settings.nativeSensorHook != it.nativeSensorHook) viewModel.updateNativeSensorHook(it.nativeSensorHook)
                 if (settings.mode != it.mode) viewModel.updateMode(it.mode)
             }
@@ -549,19 +549,20 @@ fun SettingsDialog(
                         TransportMode.Run -> 1.0f
                         else -> 0.8f
                     }
-                    val kmh = (settings.stepFreq * stride * 3.6f)
+                    val stepsPerSecond = (settings.stepCadenceSpm / 60f)
+                    val kmh = (stepsPerSecond * stride * 3.6f)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("步频", fontSize = 14.sp, color = Color.Black)
-                        Text("${((settings.stepFreq * 10).toInt() / 10f)} 步/秒 · 约 ${((kmh * 10).toInt() / 10f)} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                        Text("${settings.stepCadenceSpm.toInt()} 步/分钟 · 约 ${((kmh * 10).toInt() / 10f)} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                     }
                     Slider(
-                        value = settings.stepFreq,
-                        onValueChange = { onSettingsChange(settings.copy(stepFreq = (it * 10).toInt() / 10f)) },
-                        valueRange = 0.5f..4.0f,
+                        value = settings.stepCadenceSpm,
+                        onValueChange = { onSettingsChange(settings.copy(stepCadenceSpm = (it + 0.5f).toInt().toFloat())) },
+                        valueRange = 60f..180f,
                         colors = SliderDefaults.colors(
                             thumbColor = MaterialTheme.colorScheme.primary,
                             activeTrackColor = MaterialTheme.colorScheme.primary

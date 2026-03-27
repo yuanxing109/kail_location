@@ -79,7 +79,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     /** 随机偏移开关偏好的状态流。 */
     val randomOffset: StateFlow<Boolean> = _randomOffset.asStateFlow()
 
-    private val _logEnabled = MutableStateFlow(prefs.getBoolean(KEY_LOG_ENABLED, false))
+    private val _logEnabled = MutableStateFlow(prefs.getBoolean(KEY_LOG_ENABLED, true))
     /** 启用日志开关偏好的状态流。 */
     val logEnabled: StateFlow<Boolean> = _logEnabled.asStateFlow()
 

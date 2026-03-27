@@ -100,15 +100,14 @@ internal object KailCommandHandler {
             "set_step_enabled" -> {
                 val enabled = out.getBoolean("enabled", false)
                 FakeLocState.setStepEnabled(enabled)
-                NativeHook.setStepConfigSafe(enabled, FakeLocState.getStepCadence())
                 out.putBoolean("ok", true)
                 KailLog.d(null, "XPOSED", "PORTAL接收：步频开关 enabled=$enabled", isHighFrequency = true)
                 return true
             }
             "set_step_cadence" -> {
                 val cadence = out.getFloat("cadence", 0f)
-                FakeLocState.setStepCadence(cadence)
-                NativeHook.setStepConfigSafe(FakeLocState.isStepEnabled(), cadence)
+                val spm = if (cadence <= 10f) cadence * 60f else cadence
+                FakeLocState.setStepCadenceSpm(spm)
                 out.putBoolean("ok", true)
                 KailLog.d(null, "XPOSED", "PORTAL接收：步频 cadence=$cadence", isHighFrequency = true)
                 return true
@@ -116,15 +115,9 @@ internal object KailCommandHandler {
             "load_library" -> {
                 val path = out.getString("path") ?: return false
                 try {
-                    val success = NativeHook.loadLibrary(path)
-                    if (success) {
-                        NativeHook.setStatus(FakeLocState.isStepEnabled())
-                        out.putBoolean("ok", true)
-                        out.putString("result", "success")
-                    } else {
-                        out.putBoolean("ok", false)
-                        out.putString("result", "failed to load")
-                    }
+                    // Native library loading removed
+                    out.putBoolean("ok", false)
+                    out.putString("result", "native library loading removed")
                 } catch (e: Throwable) {
                     out.putBoolean("ok", false)
                     out.putString("result", e.message ?: "unknown error")

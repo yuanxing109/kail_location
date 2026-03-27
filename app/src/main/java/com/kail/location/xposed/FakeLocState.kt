@@ -11,7 +11,7 @@ internal object FakeLocState {
     private val bearingRef = AtomicReference(0f)
     private val altitudeRef = AtomicReference(0.0)
     private val stepEnabledRef = AtomicReference(false)
-    private val stepCadenceRef = AtomicReference(0f)
+    private val stepCadenceSpmRef = AtomicReference(0f)
 
     fun isEnabled(): Boolean = enabledRef.get()
 
@@ -37,11 +37,11 @@ internal object FakeLocState {
 
     fun isStepEnabled(): Boolean = stepEnabledRef.get()
 
-    fun setStepCadence(cadence: Float) {
-        stepCadenceRef.set(cadence)
+    fun setStepCadenceSpm(stepsPerMinute: Float) {
+        stepCadenceSpmRef.set(stepsPerMinute)
     }
 
-    fun getStepCadence(): Float = stepCadenceRef.get()
+    fun getStepCadenceSpm(): Float = stepCadenceSpmRef.get()
 
     fun updateLocation(lat: Double, lon: Double) {
         val loc = Location(LocationManager.GPS_PROVIDER)

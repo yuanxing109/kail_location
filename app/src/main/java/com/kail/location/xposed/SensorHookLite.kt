@@ -46,8 +46,8 @@ internal object SensorHookLite {
                         Thread.sleep(200)
                         continue
                     }
-                    val cadence = FakeLocState.getStepCadence()
-                    if (cadence <= 0f) {
+                    val spm = FakeLocState.getStepCadenceSpm()
+                    if (spm <= 0f) {
                         Thread.sleep(200)
                         continue
                     }
@@ -69,7 +69,7 @@ internal object SensorHookLite {
                             XposedHelpers.callMethod(l, "onSensorChanged", ev)
                         }
                     }
-                    val intervalMs = (1000.0 / cadence).toLong().coerceAtLeast(1L)
+                    val intervalMs = (60000.0 / spm).toLong().coerceAtLeast(1L)
                     Thread.sleep(intervalMs)
                 } catch (_: InterruptedException) {
                     break

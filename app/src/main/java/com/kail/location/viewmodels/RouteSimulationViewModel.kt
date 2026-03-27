@@ -261,7 +261,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         intent.putExtra(ServiceGo.EXTRA_RUN_MODE, currentRunMode)
         intent.putExtra(ServiceGo.EXTRA_SPEED_FLUCTUATION, settings.value.speedFluctuation)
         intent.putExtra(ServiceGo.EXTRA_STEP_ENABLED, settings.value.stepFreqSimulation)
-        intent.putExtra(ServiceGo.EXTRA_STEP_FREQ, settings.value.stepFreq)
+        intent.putExtra(ServiceGo.EXTRA_STEP_FREQ, settings.value.stepCadenceSpm)
         intent.putExtra(ServiceGo.EXTRA_NATIVE_SENSOR_HOOK, settings.value.nativeSensorHook)
         ContextCompat.startForegroundService(app, intent)
         _isSimulating.value = true
@@ -306,14 +306,15 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         val loop = prefs.getBoolean("route_sim_loop", _settings.value.isLoop)
         val speedFluctuation = prefs.getBoolean("route_sim_speed_fluctuation", _settings.value.speedFluctuation)
         val stepEnabled = prefs.getBoolean("route_sim_step_enabled", _settings.value.stepFreqSimulation)
-        val stepFreq = prefs.getFloat("route_sim_step_freq", _settings.value.stepFreq)
+        val raw = prefs.getFloat("route_sim_step_freq", _settings.value.stepCadenceSpm)
+        val stepCadenceSpm = if (raw <= 10f) raw * 60f else raw
         val nativeSensorHook = prefs.getBoolean("route_sim_native_sensor_hook", _settings.value.nativeSensorHook)
         _settings.value = _settings.value.copy(
             speed = speed, 
             isLoop = loop, 
             speedFluctuation = speedFluctuation, 
             stepFreqSimulation = stepEnabled, 
-            stepFreq = stepFreq,
+            stepCadenceSpm = stepCadenceSpm,
             nativeSensorHook = nativeSensorHook
         )
     }
@@ -359,21 +360,21 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
             val intent = Intent(app, ServiceGo::class.java)
             intent.putExtra(ServiceGo.EXTRA_CONTROL_ACTION, ServiceGo.CONTROL_SET_STEP)
             intent.putExtra(ServiceGo.EXTRA_STEP_ENABLED, enabled)
-            intent.putExtra(ServiceGo.EXTRA_STEP_FREQ, _settings.value.stepFreq)
+            intent.putExtra(ServiceGo.EXTRA_STEP_FREQ, _settings.value.stepCadenceSpm)
             app.startService(intent)
         }
     }
 
-    fun updateStepFreq(freq: Float) {
-        _settings.value = _settings.value.copy(stepFreq = freq)
+    fun updateStepCadenceSpm(spm: Float) {
+        _settings.value = _settings.value.copy(stepCadenceSpm = spm)
         PreferenceManager.getDefaultSharedPreferences(getApplication())
-            .edit().putFloat("route_sim_step_freq", freq).apply()
+            .edit().putFloat("route_sim_step_freq", spm).apply()
         if (_isSimulating.value) {
             val app = getApplication<Application>()
             val intent = Intent(app, ServiceGo::class.java)
             intent.putExtra(ServiceGo.EXTRA_CONTROL_ACTION, ServiceGo.CONTROL_SET_STEP)
             intent.putExtra(ServiceGo.EXTRA_STEP_ENABLED, _settings.value.stepFreqSimulation)
-            intent.putExtra(ServiceGo.EXTRA_STEP_FREQ, freq)
+            intent.putExtra(ServiceGo.EXTRA_STEP_FREQ, spm)
             app.startService(intent)
         }
     }

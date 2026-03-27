@@ -65,10 +65,8 @@ class FakeLocationXposed : IXposedHookLoadPackage, IXposedHookZygoteInit {
             
             // 只有在 system_server (pkg="android") 中才初始化 Native Hook
             if (pkg == "android") {
-                // For LSPosed Native Hook, the library must be loaded manually.
-                // LSPosed will then call native_init.
-                NativeHook.startHook()
-                KailLog.i(null, "XPOSED", "Native Hook library loaded (system_server)")
+                // Native Hook removed
+                KailLog.i(null, "XPOSED", "Native Hook init removed (system_server)")
             }
 
             KailLog.d(null, "XPOSED", "hook完成")

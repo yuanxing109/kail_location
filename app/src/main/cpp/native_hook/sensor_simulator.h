@@ -1,0 +1,93 @@
+#pragma once
+
+#include <cstdint>
+#include <atomic>
+#include <string>
+
+#ifndef TYPE_ACCELEROMETER
+#define TYPE_ACCELEROMETER 1
+#endif
+
+#ifndef TYPE_STEP_DETECTOR
+#define TYPE_STEP_DETECTOR 18
+#endif
+
+#ifndef TYPE_STEP_COUNTER
+#define TYPE_STEP_COUNTER 19
+#endif
+
+typedef struct sensors_event_t {
+    int version;
+    int sensor;
+    int type;
+    int64_t timestamp;
+    float data[16];
+} sensors_event_t;
+
+namespace gait {
+
+enum class GaitMode : int {
+    Walk = 0,
+    Run = 1,
+    FastRun = 2
+};
+
+struct GaitConfig {
+    float steps_per_minute = 120.0f;
+    GaitMode mode = GaitMode::Walk;
+    bool enable = true;
+};
+
+class SensorSimulator {
+public:
+    static SensorSimulator& Get();
+    
+    void Init();
+    
+    void UpdateParams(float spm, int mode, bool enable);
+    
+    void ProcessSensorEvents(sensors_event_t* events, size_t count);
+    
+    bool ReloadConfig();
+    
+    GaitConfig GetConfig() const;
+    
+    bool isInitialized() const { return initialized_.load(); }
+
+private:
+    SensorSimulator() = default;
+    ~SensorSimulator() = default;
+    SensorSimulator(const SensorSimulator&) = delete;
+    SensorSimulator& operator=(const SensorSimulator&) = delete;
+
+    void EnsureInitialized(int64_t ts_ns);
+    void SmoothStepRate(double dt);
+    void AdvancePhase(double dt);
+
+    void ApplyAccelerometer(sensors_event_t& e, double dt);
+    void ApplyStepCounter(sensors_event_t& e, double dt);
+    void ApplyStepDetector(sensors_event_t& e, double dt);
+
+    double NextSignedNoise(double amplitude);
+
+    static float ModeDefaultSpm(GaitMode m);
+
+    GaitConfig config_;
+    int64_t last_ts_ns_ = 0;
+    double phase_ = 0.0;
+    double step_counter_ = 0.0;
+    double step_phase_acc_ = 0.0;
+    float current_spm_ = 120.0f;
+    float target_spm_ = 120.0f;
+    uint64_t rng_state_ = 0x243F6A8885A308D3ULL;
+    int64_t last_config_poll_ns_ = 0;
+    std::atomic<bool> initialized_{false};
+
+    static constexpr double kTwoPi = 6.283185307179586476925286766559;
+    static constexpr double kNsToSec = 1e-9;
+    static constexpr double kMaxDeltaSec = 0.050;
+    static constexpr int64_t kReloadIntervalNs = 1000000000LL;
+    static constexpr const char* kConfigPath = "/data/local/tmp/step_config";
+};
+
+}  // namespace gait

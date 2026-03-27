@@ -115,18 +115,32 @@ internal object KailCommandHandler {
             "load_library" -> {
                 val path = out.getString("path") ?: return false
                 try {
-                    // Native library loading removed
-                    out.putBoolean("ok", false)
-                    out.putString("result", "native library loading removed")
+                    val result = FakeLocState.loadNativeLibrary(path)
+                    out.putBoolean("ok", result.first)
+                    out.putString("result", result.second)
+                    KailLog.d(null, "XPOSED", "PORTAL接收：加载SO库 path=$path result=${result.second}")
                 } catch (e: Throwable) {
                     out.putBoolean("ok", false)
                     out.putString("result", e.message ?: "unknown error")
+                    KailLog.e(null, "XPOSED", "PORTAL接收：加载SO库失败 path=$path error=${e.message}")
                 }
-                KailLog.d(null, "XPOSED", "PORTAL接收：加载SO库 path=$path result=${out.getString("result")}")
+                return true
+            }
+            "set_gait_params" -> {
+                val spm = out.getFloat("spm", 120f)
+                val mode = out.getInt("mode", 0)
+                val enable = out.getBoolean("enable", true)
+                try {
+                    FakeLocState.setGaitParams(spm, mode, enable)
+                    out.putBoolean("ok", true)
+                    KailLog.d(null, "XPOSED", "PORTAL接收：设置步态参数 spm=$spm mode=$mode enable=$enable")
+                } catch (e: Throwable) {
+                    out.putBoolean("ok", false)
+                    KailLog.e(null, "XPOSED", "PORTAL接收：设置步态参数失败 error=${e.message}")
+                }
                 return true
             }
             else -> return false
         }
     }
 }
-

@@ -763,9 +763,21 @@ class ServiceGo : Service() {
             return false
         }
 
-        return portalSend("load_library") {
+        val loadResult = portalSend("load_library") {
             putString("path", soFile.absolutePath)
         }
+        
+        // Send gait params after library loaded
+        if (loadResult) {
+            portalSend("set_gait_params") {
+                putFloat("spm", stepFreqCache.toFloat())
+                putInt("mode", 0)
+                putBoolean("enable", stepEnabledCache)
+            }
+            KailLog.i(this, "ServiceGo", "Native hook loaded and gait params sent")
+        }
+        
+        return loadResult
     }
 
     /**

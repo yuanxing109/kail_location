@@ -6,6 +6,8 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include <cstdio>
+#include <cstdint>
 #include <dobby.h>
 
 #include "sensor_simulator.h"
@@ -15,9 +17,13 @@
 #define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-// Symbol names - not used anymore, kept for reference
-// static constexpr const char* kSensorServiceLib = "libsensorservice.so";
-static constexpr const char* kThreadLoopSymbol = "_ZN7android13SensorService9threadLoopEv";
+// Symbol names - multiple variations to try
+static const char* kThreadLoopSymbols[] = {
+    "_ZN7android13SensorService10threadLoopEv",
+    "_ZN7android13SensorService9threadLoopEv", 
+    "android::SensorService::threadLoop",
+    nullptr
+};
 
 // Original function pointer type
 typedef bool (*ThreadLoopFunc)(void*);
@@ -31,52 +37,231 @@ static bool initialized = false;
 extern "C" bool hooked_threadLoop(void* this_ptr);
 
 // ============================================================================
-// Symbol Resolution
+// Symbol Resolution via /proc/self/maps
 // ============================================================================
 
-static void* resolve_symbol(const char* lib, const char* symbol) {
-    ALOGI("Resolving symbol: %s (trying multiple methods)", symbol);
-    
-    // Method 1: Try RTLD_DEFAULT - searches in load order
-    void* sym = dlsym(RTLD_DEFAULT, symbol);
-    if (sym) {
-        ALOGI("Found %s via RTLD_DEFAULT -> %p", symbol, sym);
-        return sym;
+static void scan_maps_for_sensor_libs() {
+    FILE* fp = fopen("/proc/self/maps", "r");
+    if (!fp) {
+        ALOGE("Failed to open /proc/self/maps");
+        return;
     }
     
-    // Method 2: Try RTLD_NEXT - searches next library
-    sym = dlsym(RTLD_NEXT, symbol);
-    if (sym) {
-        ALOGI("Found %s via RTLD_NEXT -> %p", symbol, sym);
-        return sym;
-    }
+    char line[512];
+    ALOGI("=== Scanning /proc/self/maps for sensor libs ===");
     
-    // Method 3: Try dlopen with namespace workaround
-    ALOGI("Trying dlopen with workaround...");
-    
-    // Try common system library paths
-    const char* paths[] = {
-        "/system/lib64/libsensorservice.so",
-        "/vendor/lib64/libsensorservice.so",
-        "/system/lib64/libandroid_sensors.so"
-    };
-    
-    void* handle = nullptr;
-    
-    for (const char* path : paths) {
-        ALOGI("Trying to dlopen: %s", path);
-        handle = dlopen(path, RTLD_NOW);
-        if (handle) {
-            ALOGI("dlopen %s succeeded", path);
-            sym = dlsym(handle, symbol);
-            if (sym) {
-                ALOGI("Found %s in %s -> %p", symbol, path, sym);
-                return sym;
-            }
-            dlclose(handle);
-        } else {
-            ALOGI("dlopen %s failed: %s", path, dlerror());
+    while (fgets(line, sizeof(line), fp)) {
+        if (strstr(line, "sensor") || strstr(line, "android.hardware")) {
+            ALOGI("MAP: %s", line);
         }
+    }
+    
+    ALOGI("=== End of maps scan ===");
+    fclose(fp);
+}
+
+static void* get_lib_base(const char* lib_name) {
+    FILE* fp = fopen("/proc/self/maps", "r");
+    if (!fp) {
+        ALOGE("Failed to open /proc/self/maps");
+        return nullptr;
+    }
+    
+    char line[512];
+    void* base_addr = nullptr;
+    
+    while (fgets(line, sizeof(line), fp)) {
+        if (strstr(line, lib_name) && strstr(line, "r-xp")) {
+            ALOGI("Found in maps: %s", line);
+            // Parse base address
+            uint64_t start;
+            sscanf(line, "%lx-", &start);
+            base_addr = reinterpret_cast<void*>(start);
+            ALOGI("Base address of %s: %p", lib_name, base_addr);
+            break;
+        }
+    }
+    
+    fclose(fp);
+    return base_addr;
+}
+
+// ELF structures
+struct Elf64_Ehdr {
+    uint8_t e_ident[16];
+    uint16_t e_type;
+    uint16_t e_machine;
+    uint32_t e_version;
+    uint64_t e_entry;
+    uint64_t e_phoff;
+    uint64_t e_shoff;
+    uint32_t e_flags;
+    uint16_t e_ehsize;
+    uint16_t e_phentsize;
+    uint16_t e_phnum;
+    uint16_t e_shentsize;
+    uint16_t e_shnum;
+    uint16_t e_shstrndx;
+};
+
+struct Elf64_Shdr {
+    uint32_t sh_name;
+    uint32_t sh_type;
+    uint64_t sh_flags;
+    uint64_t sh_addr;
+    uint64_t sh_offset;
+    uint64_t sh_size;
+    uint32_t sh_link;
+    uint32_t sh_info;
+    uint64_t sh_addralign;
+    uint64_t sh_entsize;
+};
+
+struct Elf64_Dyn {
+    int64_t d_tag;
+    union {
+        uint64_t d_val;
+        void* d_ptr;
+    } d_un;
+};
+
+struct Elf64_Sym {
+    uint32_t st_name;
+    uint8_t st_info;
+    uint8_t st_other;
+    uint16_t st_shndx;
+    uint64_t st_value;
+    uint64_t st_size;
+};
+
+#define DT_STRTAB 5
+#define DT_SYMTAB 6
+#define DT_STRSZ 10
+#define DT_SYMENT 11
+
+static void* find_symbol_in_elf(void* base_addr, const char* symbol_name) {
+    // Read ELF header
+    Elf64_Ehdr* ehdr = reinterpret_cast<Elf64_Ehdr*>(base_addr);
+    
+    if (ehdr->e_ident[0] != 0x7f || ehdr->e_ident[1] != 'E' || 
+        ehdr->e_ident[2] != 'L' || ehdr->e_ident[3] != 'F') {
+        ALOGE("Invalid ELF header at %p", base_addr);
+        return nullptr;
+    }
+    
+    ALOGI("ELF header valid at %p", base_addr);
+    
+    // Find dynamic section
+    uint64_t dyn_offset = 0;
+    Elf64_Phdr* phdr = reinterpret_cast<Elf64_Phdr*>(reinterpret_cast<char*>(base_addr) + ehdr->e_phoff);
+    
+    for (int i = 0; i < ehdr->e_phnum; i++) {
+        if (phdr[i].p_type == 2) { // PT_DYNAMIC
+            dyn_offset = phdr[i].p_offset;
+            ALOGI("Found PT_DYNAMIC at offset 0x%lx", dyn_offset);
+            break;
+        }
+    }
+    
+    if (!dyn_offset) {
+        ALOGE("No PT_DYNAMIC found");
+        return nullptr;
+    }
+    
+    // Parse dynamic section to find SYMTAB and STRTAB
+    char* strtab = nullptr;
+    Elf64_Sym* symtab = nullptr;
+    size_t sym_count = 0;
+    
+    Elf64_Dyn* dyn = reinterpret_cast<Elf64_Dyn*>(reinterpret_cast<char*>(base_addr) + dyn_offset);
+    for (int i = 0; dyn[i].d_tag != 0; i++) {
+        if (dyn[i].d_tag == DT_STRTAB) {
+            strtab = reinterpret_cast<char*>(dyn[i].d_un.d_ptr);
+            ALOGI("Found STRTAB at %p", strtab);
+        } else if (dyn[i].d_tag == DT_SYMTAB) {
+            symtab = reinterpret_cast<Elf64_Sym*>(dyn[i].d_un.d_ptr);
+            ALOGI("Found SYMTAB at %p", symtab);
+        } else if (dyn[i].d_tag == DT_SYMENT) {
+            // Should be sizeof(Elf64_Sym) = 24
+        } else if (dyn[i].d_tag == DT_STRSZ) {
+            // String table size
+        }
+    }
+    
+    if (!strtab || !symtab) {
+        ALOGE("Could not find strtab or symtab");
+        return nullptr;
+    }
+    
+    // Search for symbol - iterate through symtab
+    // Note: We don't know exact size, so we'll search for a reasonable range
+    ALOGI("Searching for symbol: %s", symbol_name);
+    
+    // Try to find symbol by iterating (this is a simplified approach)
+    // In reality we'd need the symtab size from elsewhere
+    for (int i = 0; i < 5000; i++) {
+        Elf64_Sym* sym = &symtab[i];
+        if (sym->st_name == 0) continue;
+        
+        const char* sym_name = strtab + sym->st_name;
+        if (sym_name && strstr(sym_name, symbol_name)) {
+            ALOGI("Found symbol: %s at index %d, value: %p", sym_name, i, 
+                  reinterpret_cast<void*>(sym->st_value));
+            
+            if (sym->st_value != 0) {
+                return reinterpret_cast<void*>(sym->st_value);
+            }
+        }
+    }
+    
+    ALOGE("Symbol %s not found in ELF", symbol_name);
+    return nullptr;
+}
+
+static void* resolve_symbol(const char* lib, const char* symbol) {
+    ALOGI("Resolving symbol: %s", symbol);
+    
+    // Try each symbol name variation
+    for (int i = 0; kThreadLoopSymbols[i] != nullptr; i++) {
+        const char* sym_name = kThreadLoopSymbols[i];
+        
+        // Method 1: Try RTLD_DEFAULT
+        void* sym = dlsym(RTLD_DEFAULT, sym_name);
+        if (sym) {
+            ALOGI("Found %s via RTLD_DEFAULT -> %p", sym_name, sym);
+            return sym;
+        }
+        
+        // Method 2: Try RTLD_NEXT
+        sym = dlsym(RTLD_NEXT, sym_name);
+        if (sym) {
+            ALOGI("Found %s via RTLD_NEXT -> %p", sym_name, sym);
+            return sym;
+        }
+        
+        ALOGI("Symbol %s not found via dlsym", sym_name);
+    }
+    
+    // Method 3: Parse ELF directly to find symbol
+    const char* lib_name = "libsensorservice.so";
+    void* base_addr = get_lib_base(lib_name);
+    
+    if (base_addr) {
+        ALOGI("Found %s at base %p, parsing ELF for symbol", lib_name, base_addr);
+        
+        // Try each symbol variation with ELF parser
+        for (int i = 0; kThreadLoopSymbols[i] != nullptr; i++) {
+            const char* sym_name = kThreadLoopSymbols[i];
+            ALOGI("Trying to find %s via ELF parsing", sym_name);
+            
+            void* resolved = find_symbol_in_elf(base_addr, sym_name);
+            if (resolved) {
+                ALOGI("Found %s via ELF -> %p", sym_name, resolved);
+                return resolved;
+            }
+        }
+    } else {
+        ALOGE("Could not find %s in /proc/self/maps", lib_name);
     }
     
     ALOGE("Failed to resolve symbol: %s", symbol);
@@ -213,15 +398,28 @@ static bool install_hook() {
     ALOGI("Installing SensorService::threadLoop hook...");
     ALOGI("========================================");
     
-    // Resolve symbol - just pass symbol name, lib is handled internally
-    void* thread_loop_addr = resolve_symbol(nullptr, kThreadLoopSymbol);
+    // Try each symbol variation
+    void* thread_loop_addr = nullptr;
+    const char* found_symbol = nullptr;
+    
+    for (int i = 0; kThreadLoopSymbols[i] != nullptr; i++) {
+        const char* sym_name = kThreadLoopSymbols[i];
+        ALOGI("Trying symbol: %s", sym_name);
+        
+        thread_loop_addr = resolve_symbol(nullptr, sym_name);
+        if (thread_loop_addr) {
+            found_symbol = sym_name;
+            break;
+        }
+    }
+    
     if (!thread_loop_addr) {
         ALOGE("Failed to resolve threadLoop symbol!");
         ALOGE("Hook installation ABORTED");
         return false;
     }
     
-    ALOGI("threadLoop address: %p", thread_loop_addr);
+    ALOGI("Found %s at %p", found_symbol, thread_loop_addr);
     
     original_thread_loop = reinterpret_cast<ThreadLoopFunc>(thread_loop_addr);
     
@@ -254,6 +452,9 @@ static void native_hook_init() {
     ALOGI("========================================");
     ALOGI("Native Hook Library Loading (constructor)...");
     ALOGI("========================================");
+    
+    // Scan maps first to see what's loaded
+    scan_maps_for_sensor_libs();
     
     // Initialize sensor simulator
     ALOGI("Initializing SensorSimulator...");

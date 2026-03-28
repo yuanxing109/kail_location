@@ -53,10 +53,11 @@ static void install_poll_hook() {
         return;
     }
     
-    static constexpr uint32_t kPollOffset = 0x1394a4;
+    // Offset for HidlSensorHalWrapper::poll (function entry point)
+    static constexpr uint32_t kPollOffset = 0x12da3c;
     void* target = reinterpret_cast<char*>(base) + kPollOffset;
     
-    ALOGI("Installing poll hook: base=%p target=%p offset=0x%x", base, target, kPollOffset);
+    ALOGI("Installing HIDL poll hook: base=%p target=%p offset=0x%x", base, target, kPollOffset);
     
     int ret = DobbyHook(
         target,
@@ -88,13 +89,15 @@ static void process_sensor_events(sensors_event_t* events, int count) {
 }
 
 extern "C" int hooked_poll(void* device, sensors_event_t* buffer, int count) {
-    ALOGI(">>> hooked_poll called, count=%d", count);
+    ALOGE("🔥 HIDL poll hooked!!! count=%d", count);
     
     int result = 0;
     
     if (original_poll) {
         result = original_poll(device, buffer, count);
     }
+    
+    ALOGE("🔥 poll returned=%d", result);
     
     if (result > 0 && buffer && count > 0) {
         process_sensor_events(buffer, result);

@@ -79,7 +79,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     /** 随机偏移开关偏好的状态流。 */
     val randomOffset: StateFlow<Boolean> = _randomOffset.asStateFlow()
 
-    private val _logEnabled = MutableStateFlow(prefs.getBoolean(KEY_LOG_ENABLED, true))
+    private val _logEnabled = MutableStateFlow(prefs.getBoolean(KEY_LOG_ENABLED, false))
     /** 启用日志开关偏好的状态流。 */
     val logEnabled: StateFlow<Boolean> = _logEnabled.asStateFlow()
 
@@ -102,7 +102,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             KEY_LAT_OFFSET -> _latOffset.value = sharedPreferences.getString(key, "10.0") ?: "10.0"
             KEY_LON_OFFSET -> _lonOffset.value = sharedPreferences.getString(key, "10.0") ?: "10.0"
             KEY_RANDOM_OFFSET -> _randomOffset.value = sharedPreferences.getBoolean(key, false)
-            KEY_LOG_ENABLED -> _logEnabled.value = sharedPreferences.getBoolean(key, true)
+            KEY_LOG_ENABLED -> _logEnabled.value = sharedPreferences.getBoolean(key, false)
             KEY_HISTORY_EXPIRATION -> _historyExpiration.value = sharedPreferences.getString(key, "7.0") ?: "7.0"
             KEY_POLL_OFFSET -> _pollOffset.value = sharedPreferences.getString(key, "") ?: ""
         }

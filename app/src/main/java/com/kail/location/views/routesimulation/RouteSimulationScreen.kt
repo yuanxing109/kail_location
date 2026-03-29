@@ -73,6 +73,7 @@ fun RouteSimulationScreen(
     val updateInfo by viewModel.updateInfo.collectAsState()
     val isSimulating by viewModel.isSimulating.collectAsState()
     val isPaused by viewModel.isPaused.collectAsState()
+    val runMode by viewModel.runMode.collectAsState()
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -80,6 +81,15 @@ fun RouteSimulationScreen(
     val isDownloading by viewModel.isDownloading.collectAsState()
     val downloadProgress by viewModel.downloadProgress.collectAsState()
     val installUri by viewModel.installUri.collectAsState()
+    val toastMessage by viewModel.toastMessage.collectAsState()
+    
+    LaunchedEffect(toastMessage) {
+        toastMessage?.let {
+            android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_SHORT).show()
+            viewModel.clearToastMessage()
+        }
+    }
+    
     if (updateInfo != null) {
         com.kail.location.views.common.UpdateDownloadDialog(
             info = updateInfo!!,
@@ -240,7 +250,8 @@ fun RouteSimulationScreen(
                 if (settings.stepFreqSimulation != it.stepFreqSimulation) viewModel.updateStepFreqSimulation(it.stepFreqSimulation)
                 if (settings.stepCadenceSpm != it.stepCadenceSpm) viewModel.updateStepCadenceSpm(it.stepCadenceSpm)
                 if (settings.mode != it.mode) viewModel.updateMode(it.mode)
-            }
+            },
+            runMode = runMode
         )
     }
 
@@ -452,8 +463,14 @@ fun Modifier.scale(scale: Float): Modifier = this.then(
 fun SettingsDialog(
     settings: SimulationSettings,
     onDismiss: () -> Unit,
-    onSettingsChange: (SimulationSettings) -> Unit
+    onSettingsChange: (SimulationSettings) -> Unit,
+    runMode: String = "noroot"
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember { androidx.preference.PreferenceManager.getDefaultSharedPreferences(context) }
+    val pollOffset = remember { prefs.getString("setting_poll_offset", "") ?: "" }
+    val canUseStepFreq = runMode == "root" && pollOffset.isNotEmpty()
+    
     Dialog(onDismissRequest = onDismiss) {
         Card(
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -529,10 +546,21 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("步频模拟", fontSize = 14.sp, color = Color.Black)
+                    Text("步频模拟", fontSize = 14.sp, color = if (canUseStepFreq) Color.Black else Color.Gray)
                     Switch(
                         checked = settings.stepFreqSimulation,
-                        onCheckedChange = { onSettingsChange(settings.copy(stepFreqSimulation = it)) },
+                        onCheckedChange = { 
+                            if (!canUseStepFreq) {
+                                android.widget.Toast.makeText(
+                                    context, 
+                                    if (runMode != "root") "步频模拟需要 ROOT 模式" else "请先在设置中配置传感器参数",
+                                    android.widget.Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                onSettingsChange(settings.copy(stepFreqSimulation = it))
+                            }
+                        },
+                        enabled = canUseStepFreq,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color.White,
                             checkedTrackColor = MaterialTheme.colorScheme.primary

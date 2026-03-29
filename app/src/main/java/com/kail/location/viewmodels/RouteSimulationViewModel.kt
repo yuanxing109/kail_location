@@ -71,6 +71,9 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
     private val _runMode = MutableStateFlow("noroot")
     val runMode: StateFlow<String> = _runMode.asStateFlow()
 
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage: StateFlow<String?> = _toastMessage.asStateFlow()
+
     // Search
     private val _searchResults = MutableStateFlow<List<Map<String, Any>>>(emptyList())
     val searchResults: StateFlow<List<Map<String, Any>>> = _searchResults.asStateFlow()
@@ -189,6 +192,10 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
     fun clearInstallUri() {
         _installUri.value = null
     }
+    
+    fun clearToastMessage() {
+        _toastMessage.value = null
+    }
 
     fun startUpdateDownload(context: Context) {
         val info = _updateInfo.value ?: return
@@ -251,6 +258,19 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         // 关键修复：启动前强制同步一次最新的运行模式
         val currentRunMode = sharedPreferences.getString("setting_run_mode", "root") ?: "root"
         _runMode.value = currentRunMode
+
+        // 检查步频模拟权限
+        if (settings.value.stepFreqSimulation) {
+            if (currentRunMode != "root") {
+                _toastMessage.value = "步频模拟需要 ROOT 模式"
+                return false
+            }
+            val pollOffset = sharedPreferences.getString("setting_poll_offset", "") ?: ""
+            if (pollOffset.isEmpty()) {
+                _toastMessage.value = "请先在设置中配置传感器参数"
+                return false
+            }
+        }
 
         val intent = Intent(app, ServiceGo::class.java)
         intent.putExtra(ServiceGo.EXTRA_ROUTE_POINTS, points)

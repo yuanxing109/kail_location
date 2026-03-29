@@ -24,7 +24,7 @@ typedef int (*PollFunc)(void*, void*, int);
 static PollFunc original_poll = nullptr;
 static bool hook_installed = false;
 static bool route_simulation_active = false;
-static uint64_t poll_offset = 0x394a4;
+static uint64_t poll_offset = 0;
 
 void setRouteSimulationActive(bool active) {
     route_simulation_active = active;
@@ -110,7 +110,12 @@ static void install_poll_hook() {
         // Placeholder to keep code compile
     }
     
-    // Use configurable offset
+    // Use configurable offset (must be set before hook)
+    if (poll_offset == 0) {
+        ALOGE("Poll offset not configured!");
+        return;
+    }
+    
     void* pollAddr = (void*)((char*)base + poll_offset);
     ALOGI("Using poll at %p (offset=0x%lx)", pollAddr, poll_offset);
     

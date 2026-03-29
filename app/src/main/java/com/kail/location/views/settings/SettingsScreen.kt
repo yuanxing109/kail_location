@@ -161,9 +161,10 @@ fun SettingsScreen(
             )
 
             EditTextPreference(
-                title = "Sensor Poll 偏移量", // setting_poll_offset
+                title = "传感器参数", // setting_poll_offset
                 value = pollOffset,
-                onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_POLL_OFFSET, it) }
+                onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_POLL_OFFSET, it) },
+                description = "请在GitHub传感器参数.md中获得"
             )
 
             EditTextPreference(
@@ -237,13 +238,21 @@ fun SwitchPreference(
 fun EditTextPreference(
     title: String,
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    description: String = ""
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
     ListItem(
         headlineContent = { Text(title) },
-        supportingContent = { Text(value) },
+        supportingContent = { 
+            Column {
+                Text(value.ifEmpty { "未设置" }) 
+                if (description.isNotEmpty()) {
+                    Text(description, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        },
         modifier = Modifier.clickable { showDialog = true }
     )
 
@@ -253,12 +262,19 @@ fun EditTextPreference(
             onDismissRequest = { showDialog = false },
             title = { Text(title) },
             text = {
-                OutlinedTextField(
-                    value = tempValue,
-                    onValueChange = { tempValue = it },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
-                )
+                Column {
+                    OutlinedTextField(
+                        value = tempValue,
+                        onValueChange = { tempValue = it },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        singleLine = true,
+                        placeholder = { Text("如: 0x394a4") }
+                    )
+                    if (description.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(description, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
             },
             confirmButton = {
                 TextButton(

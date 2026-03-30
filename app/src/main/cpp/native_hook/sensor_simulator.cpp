@@ -120,18 +120,53 @@ void SensorSimulator::ApplyAccelerometer(sensors_event_t& e, double dt) {
             a = 1.0; b = 1.0; c = 1.0;
             break;
         case GaitMode::Run:
-            a = 1.5; b = 1.3; c = 1.3;
+            a = 2.0; b = 1.8; c = 1.8;
             break;
         case GaitMode::FastRun:
-            a = 2.0; b = 1.6; c = 1.6;
+            a = 3.0; b = 2.5; c = 2.5;
             break;
     }
     
     double t = static_cast<double>(e.timestamp) * kNsToSec;
     
-    double base_x = std::sin(omega * t) * 3.0 * a;
-    double base_y = std::cos(omega * t) * 2.0 * b;
-    double base_z = 9.8 + std::sin(2.0 * omega * t) * 1.5 * c;
+    double base_x = std::sin(omega * t) * 5.0 * a;
+    double base_y = std::cos(omega * t) * 3.0 * b;
+    double base_z = 9.8 + std::sin(2.0 * omega * t) * 2.5 * c;
+    
+    double noise_scale = 0.05;
+    double x = base_x * (1.0 + NextSignedNoise(noise_scale));
+    double y = base_y * (1.0 + NextSignedNoise(noise_scale));
+    double z = base_z * (1.0 + NextSignedNoise(noise_scale));
+    
+    e.data[0] = static_cast<float>(x);
+    e.data[1] = static_cast<float>(y);
+    e.data[2] = static_cast<float>(z);
+}
+
+void SensorSimulator::ApplyLinearAcceleration(sensors_event_t& e, double dt) {
+    (void)dt;
+    
+    const double sps = static_cast<double>(current_spm_) / 60.0;
+    const double omega = kTwoPi * sps;
+    
+    double a = 1.0, b = 1.0, c = 1.0;
+    switch (config_.mode) {
+        case GaitMode::Walk:
+            a = 1.0; b = 1.0; c = 1.0;
+            break;
+        case GaitMode::Run:
+            a = 2.0; b = 1.8; c = 1.8;
+            break;
+        case GaitMode::FastRun:
+            a = 3.0; b = 2.5; c = 2.5;
+            break;
+    }
+    
+    double t = static_cast<double>(e.timestamp) * kNsToSec;
+    
+    double base_x = std::sin(omega * t) * 5.0 * a;
+    double base_y = std::cos(omega * t) * 3.0 * b;
+    double base_z = std::sin(2.0 * omega * t) * 2.5 * c;
     
     double noise_scale = 0.05;
     double x = base_x * (1.0 + NextSignedNoise(noise_scale));
@@ -199,6 +234,9 @@ void SensorSimulator::ProcessSensorEvents(sensors_event_t* events, size_t count)
             case TYPE_ACCELEROMETER:
                 ApplyAccelerometer(e, dt);
                 break;
+            case TYPE_LINEAR_ACCELERATION:
+                ApplyLinearAcceleration(e, dt);
+                break;
             case TYPE_STEP_COUNTER:
                 ApplyStepCounter(e, dt);
                 break;
@@ -231,6 +269,9 @@ void SensorSimulator::ProcessSensorEvent(sensors_event_t& e) {
     switch (e.type) {
         case TYPE_ACCELEROMETER:
             ApplyAccelerometer(e, dt);
+            break;
+        case TYPE_LINEAR_ACCELERATION:
+            ApplyLinearAcceleration(e, dt);
             break;
         case TYPE_STEP_COUNTER:
             ApplyStepCounter(e, dt);

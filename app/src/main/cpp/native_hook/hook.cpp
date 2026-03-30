@@ -16,6 +16,7 @@
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 #define SENSOR_TYPE_ACCELEROMETER 1
+#define SENSOR_TYPE_LINEAR_ACCELERATION 10
 #define SENSOR_TYPE_STEP_COUNTER 19
 #define SENSOR_TYPE_STEP_DETECTOR 18
 
@@ -52,6 +53,8 @@ static void process_sensor_events(void* buffer, int count) {
             ALOGI("STEP_DETECTOR: %.0f", e.data[0]);
         } else if (e.type == SENSOR_TYPE_ACCELEROMETER) {
             ALOGD("ACCEL: %.2f %.2f %.2f", e.data[0], e.data[1], e.data[2]);
+        } else if (e.type == SENSOR_TYPE_LINEAR_ACCELERATION) {
+            ALOGD("LINEAR_ACCEL: %.2f %.2f %.2f", e.data[0], e.data[1], e.data[2]);
         }
     }
 }

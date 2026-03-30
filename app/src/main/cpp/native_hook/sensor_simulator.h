@@ -8,6 +8,10 @@
 #define TYPE_ACCELEROMETER 1
 #endif
 
+#ifndef TYPE_LINEAR_ACCELERATION
+#define TYPE_LINEAR_ACCELERATION 10
+#endif
+
 #ifndef TYPE_STEP_DETECTOR
 #define TYPE_STEP_DETECTOR 18
 #endif
@@ -67,6 +71,7 @@ private:
     void AdvancePhase(double dt);
 
     void ApplyAccelerometer(sensors_event_t& e, double dt);
+    void ApplyLinearAcceleration(sensors_event_t& e, double dt);
     void ApplyStepCounter(sensors_event_t& e, double dt);
     void ApplyStepDetector(sensors_event_t& e, double dt);
 

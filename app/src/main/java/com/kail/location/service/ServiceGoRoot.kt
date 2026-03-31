@@ -558,6 +558,14 @@ class ServiceGoRoot : Service() {
                 } catch (e: Exception) {
                     KailLog.e(this@ServiceGoRoot, "ServiceGoRoot", "handleMessage exception: ${e.message}")
                     if (!isStop) {
+                        sendEmptyMessage(HANDLER_MSG_ID)
+                    }
+                } catch (e: InterruptedException) {
+                    KailLog.e(this@ServiceGoRoot, "ServiceGoRoot", "handleMessage interrupted: ${e.message}")
+                    Thread.currentThread().interrupt()
+                } catch (e: Exception) {
+                    KailLog.e(this@ServiceGoRoot, "ServiceGoRoot", "handleMessage exception: ${e.message}")
+                    if (!isStop) {
                         sendEmptyMessageDelayed(HANDLER_MSG_ID, 1000)
                     }
                 }
@@ -745,17 +753,42 @@ class ServiceGoRoot : Service() {
     private fun portalTick() {
         if (!portalStartIfNeeded()) return
         val speedToSet = if (isStop) 0.0f else mSpeed.toFloat()
+        val lat = mCurLat
+        val lng = mCurLng
+        val bearing = mCurBea.toDouble()
         
-        KailLog.log(this, "ServiceGoRoot", "Portal Tick: lat=$mCurLat, lng=$mCurLng, speed=$speedToSet", isHighFrequency = true)
+        KailLog.log(this, "ServiceGoRoot", "Portal Tick: lat=$lat, lng=$lng, speed=$speedToSet", isHighFrequency = true)
 
-        portalSend("set_speed") { putFloat("speed", speedToSet) }
-        portalSend("set_bearing") { putDouble("bearing", mCurBea.toDouble()) }
-        portalSend("update_location") {
-            putDouble("lat", mCurLat)
-            putDouble("lon", mCurLng)
-            putString("mode", "=")
-        }
-        portalSend("broadcast_location")
+        // Use ThreadPool to send commands without blocking main loop
+        val key = portalRandomKey ?: return
+        val locMgr = mLocManager
+        val provider = PORTAL_PROVIDER
+        
+        Thread {
+            try {
+                fun sendCmd(cmdId: String, block: Bundle.() -> Unit) {
+                    try {
+                        val rely = Bundle()
+                        rely.putString("command_id", cmdId)
+                        rely.block()
+                        locMgr.sendExtraCommand(provider, key, rely)
+                    } catch (e: Exception) {
+                        // Silent fail
+                    }
+                }
+                
+                sendCmd("set_speed") { putFloat("speed", speedToSet) }
+                sendCmd("set_bearing") { putDouble("bearing", bearing) }
+                sendCmd("update_location") {
+                    putDouble("lat", lat)
+                    putDouble("lon", lng)
+                    putString("mode", "=")
+                }
+                sendCmd("broadcast_location") { }
+            } catch (e: Exception) {
+                // Silent fail
+            }
+        }.start()
     }
 
     private fun portalStopSafe() {

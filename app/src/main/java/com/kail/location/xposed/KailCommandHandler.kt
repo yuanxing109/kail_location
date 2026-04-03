@@ -115,13 +115,12 @@ internal object KailCommandHandler {
             "load_library" -> {
                 val path = out.getString("path") ?: return false
                 val writeOffset = out.getString("write_offset") ?: ""
-                val convertOffset = out.getString("convert_offset") ?: ""
                 try {
-                    val result = FakeLocState.loadNativeLibrary(path, writeOffset, convertOffset)
+                    val result = FakeLocState.loadNativeLibrary(path, writeOffset)
                     out.putBoolean("ok", result.first)
                     out.putString("result", result.second)
-                    KailLog.d(null, "XPOSED", "PORTAL接收：加载SO库 path=$path write_offset=$writeOffset convert_offset=$convertOffset result=${result.second}")
-                    android.util.Log.i("NativeHook", "Library load result: ${result.first}, write_offset=$writeOffset convert_offset=$convertOffset")
+                    KailLog.d(null, "XPOSED", "PORTAL接收：加载SO库 path=$path write_offset=$writeOffset result=${result.second}")
+                    android.util.Log.i("NativeHook", "Library load result: ${result.first}, write_offset=$writeOffset")
                 } catch (e: Throwable) {
                     out.putBoolean("ok", false)
                     out.putString("result", e.message ?: "unknown error")
@@ -131,7 +130,7 @@ internal object KailCommandHandler {
                 return true
             }
             "set_write_offset" -> {
-                val offset = out.getString("offset") ?: "0x122e0"
+                val offset = out.getString("offset") ?: "0x15210"
                 try {
                     FakeLocState.setWriteOffset(offset)
                     out.putBoolean("ok", true)
@@ -139,32 +138,6 @@ internal object KailCommandHandler {
                 } catch (e: Throwable) {
                     out.putBoolean("ok", false)
                     KailLog.e(null, "XPOSED", "PORTAL接收：设置write偏移失败 error=${e.message}")
-                }
-                return true
-            }
-            "set_convert_offset" -> {
-                val offset = out.getString("offset") ?: "0x5B420"
-                try {
-                    FakeLocState.setConvertOffset(offset)
-                    out.putBoolean("ok", true)
-                    KailLog.d(null, "XPOSED", "PORTAL接收：设置convert偏移 offset=$offset")
-                } catch (e: Throwable) {
-                    out.putBoolean("ok", false)
-                    KailLog.e(null, "XPOSED", "PORTAL接收：设置convert偏移失败 error=${e.message}")
-                }
-                return true
-            }
-            "set_gait_params" -> {
-                val spm = out.getFloat("spm", 120f)
-                val mode = out.getInt("mode", 0)
-                val enable = out.getBoolean("enable", true)
-                try {
-                    FakeLocState.setGaitParams(spm, mode, enable)
-                    out.putBoolean("ok", true)
-                    KailLog.d(null, "XPOSED", "PORTAL接收：设置步态参数 spm=$spm mode=$mode enable=$enable")
-                } catch (e: Throwable) {
-                    out.putBoolean("ok", false)
-                    KailLog.e(null, "XPOSED", "PORTAL接收：设置步态参数失败 error=${e.message}")
                 }
                 return true
             }

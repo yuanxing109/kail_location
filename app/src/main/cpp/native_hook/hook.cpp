@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cerrno>
 #include <sys/types.h>
+#include <cinttypes>
 
 #include "sensor_simulator.h"
 
@@ -23,16 +24,11 @@
 
 #define EVENT_SIZE 0x68
 
-typedef long (*WriteFunc)(void*, long);
-typedef void (*ConvertFunc)(void*, void*);
-
-static WriteFunc original_write = nullptr;
-static ConvertFunc original_convert = nullptr;
-static bool write_hook_installed = false;
-static bool convert_hook_installed = false;
+typedef void (*SendObjectsFunc)(long*, void*, long, long);
+static SendObjectsFunc original_send_objects = nullptr;
+static bool send_objects_hook_installed = false;
 static bool route_simulation_active = false;
-static uint64_t write_offset = 0;
-static uint64_t convert_offset = 0;
+static uint64_t send_objects_offset = 0;
 
 #define ALOGI_TO_FILE(...) ALOGI(__VA_ARGS__)
 #define ALOGE_TO_FILE(...) ALOGE(__VA_ARGS__)
@@ -75,68 +71,83 @@ static void process_sensor_event(void* event) {
     }
 }
 
-extern "C" long hooked_write(void* events, long count) {
+extern "C" void hooked_send_objects(long* param_1, void* param_2, long param_3, long param_4) {
 
-    // ✅ 基础参数校验
-    if (!events) {
-        ALOGE("events is null!");
-        if (original_write) {
-            return original_write(events, count);
+    ALOGI("hooked_send_objects called: route_active=%d, param_2=%p, param_3=%ld, param_4=%ld", 
+          route_simulation_active ? 1 : 0, param_2, param_3, param_4);
+
+    if (!param_2) {
+        ALOGE("param_2 is null!");
+        if (original_send_objects) {
+            original_send_objects(param_1, param_2, param_3, param_4);
         }
-        return -1;
+        return;
     }
 
+    int count = (int)param_3;
+    
     if (count <= 0 || count > 1000) {
-        ALOGE("invalid count: %ld", count);
-        if (original_write) {
-            return original_write(events, count);
+        ALOGE("invalid count: %d", count);
+        if (original_send_objects) {
+            original_send_objects(param_1, param_2, param_3, param_4);
         }
-        return -1;
+        return;
     }
 
-    // ✅ 遍历 events（带基础防御）
-    char* ptr = (char*)events;
-
-    for (long i = 0; i < count; i++) {
-
+    char* ptr = (char*)param_2;
+    for (int i = 0; i < count; i++) {
         void* event = ptr + i * EVENT_SIZE;
-
-        // 👉 简单地址合法性判断（防野指针）
         uintptr_t addr = (uintptr_t)event;
         if (addr < 0x10000) {
             ALOGE("invalid event ptr: %p", event);
             continue;
         }
 
-        process_sensor_event(event);
+        if (route_simulation_active) {
+            int type = *(int*)((char*)event + 0x08);
+            ALOGI("Processing event type=%d", type);
+            
+            int64_t timestamp = *(int64_t*)((char*)event + 0x10);
+            float data0 = *(float*)((char*)event + 0x18);
+            float data1 = *(float*)((char*)event + 0x1C);
+            float data2 = *(float*)((char*)event + 0x20);
+
+            sensors_event_t se;
+            memset(&se, 0, sizeof(se));
+            se.type = type;
+            se.timestamp = timestamp;
+            se.data[0] = data0;
+            se.data[1] = data1;
+            se.data[2] = data2;
+
+            gait::SensorSimulator::Get().ProcessSensorEvents(&se, 1);
+
+            *(float*)((char*)event + 0x18) = se.data[0];
+            *(float*)((char*)event + 0x1C) = se.data[1];
+            *(float*)((char*)event + 0x20) = se.data[2];
+
+            if (type == SENSOR_TYPE_STEP_COUNTER) {
+                ALOGI("STEP_COUNTER: %.0f -> %.0f", data0, se.data[0]);
+            } else if (type == SENSOR_TYPE_STEP_DETECTOR) {
+                ALOGI("STEP_DETECTOR: %.0f -> %.0f", data0, se.data[0]);
+            } else if (type == SENSOR_TYPE_ACCELEROMETER) {
+                ALOGI("ACCEL: %.2f %.2f %.2f -> %.2f %.2f %.2f", data0, data1, data2, se.data[0], se.data[1], se.data[2]);
+            } else if (type == SENSOR_TYPE_LINEAR_ACCELERATION) {
+                ALOGI("LINEAR_ACCEL: %.2f %.2f %.2f -> %.2f %.2f %.2f", data0, data1, data2, se.data[0], se.data[1], se.data[2]);
+            }
+        }
     }
 
-    // ✅ 关键：检查 original_write
-    if (!original_write) {
-        ALOGE("❌ original_write is null! Hook may have failed.");
-
-        // ⚠️ 这里不要 return 0（会吞数据）
-        // 👉 推荐返回 count（假装写成功，避免系统异常）
-        return count;
+    if (!original_send_objects) {
+        ALOGE("❌ original_send_objects is null!");
+        return;
     }
 
-    // ✅ 正常走原函数
-    return original_write(events, count);
+    original_send_objects(param_1, param_2, param_3, param_4);
 }
 
-
-extern "C" void hooked_convert(void* inEvent, void* outEvent) {
-    if (original_convert) {
-        original_convert(inEvent, outEvent);
-    }
-
-    if (outEvent) {
-        process_sensor_event(outEvent);
-    }
-}
-
-static void install_write_hook() {
-    ALOGI_TO_FILE("Installing SensorEventQueue::write hook...");
+static void install_send_objects_hook() {
+    ALOGI_TO_FILE("Installing BitTube::sendObjects hook...");
     
     void* base = nullptr;
     
@@ -163,67 +174,27 @@ static void install_write_hook() {
         return;
     }
     
-    if (write_offset == 0) {
-        ALOGE_TO_FILE("Write offset not configured!");
+    if (send_objects_offset == 0) {
+        ALOGE_TO_FILE("SendObjects offset not configured!");
         return;
     }
     
-    void* writeAddr = (void*)((char*)base + write_offset);
-    ALOGI_TO_FILE("Using SensorEventQueue::write at %p (offset=0x%lx)", writeAddr, write_offset);
+    void* addr = (void*)((char*)base + send_objects_offset);
+    ALOGI_TO_FILE("Using BitTube::sendObjects at %p (offset=0x%lx)", addr, send_objects_offset);
     
-    int ret = DobbyHook(writeAddr, (void*)hooked_write, (void**)&original_write);
+    if (addr) {
+        unsigned char* check = (unsigned char*)addr;
+        ALOGI_TO_FILE("First bytes: %02x %02x %02x %02x %02x %02x %02x %02x", 
+            check[0], check[1], check[2], check[3], check[4], check[5], check[6], check[7]);
+    }
+    
+    int ret = DobbyHook(addr, (void*)hooked_send_objects, (void**)&original_send_objects);
     
     if (ret == 0) {
-        ALOGI_TO_FILE("✅ Write Hook SUCCESS!");
-        write_hook_installed = true;
+        ALOGI_TO_FILE("✅ SendObjects Hook SUCCESS!");
+        send_objects_hook_installed = true;
     } else {
-        ALOGE("❌ Write DobbyHook failed: %d", ret);
-    }
-}
-
-static void install_convert_hook() {
-    ALOGI_TO_FILE("Installing convertToSensorEvent hook...");
-    
-    void* base = nullptr;
-    
-    FILE* fp = fopen("/proc/self/maps", "r");
-    if (!fp) {
-        ALOGE_TO_FILE("Failed to open /proc/self/maps");
-        return;
-    }
-    
-    char line[512];
-    while (fgets(line, sizeof(line), fp)) {
-        if (strstr(line, "libsensorservice.so")) {
-            uint64_t start;
-            sscanf(line, "%lx-", &start);
-            base = (void*)start;
-            ALOGI_TO_FILE("Found libsensorservice.so at base=%p", base);
-            break;
-        }
-    }
-    fclose(fp);
-    
-    if (!base) {
-        ALOGE_TO_FILE("libsensorservice.so not found in maps");
-        return;
-    }
-    
-    if (convert_offset == 0) {
-        ALOGE_TO_FILE("Convert offset not configured!");
-        return;
-    }
-    
-    void* convertAddr = (void*)((char*)base + convert_offset);
-    ALOGI_TO_FILE("Using convertToSensorEvent at %p (offset=0x%lx)", convertAddr, convert_offset);
-    
-    int ret = DobbyHook(convertAddr, (void*)hooked_convert, (void**)&original_convert);
-    
-    if (ret == 0) {
-        ALOGI_TO_FILE("✅ Convert Hook SUCCESS!");
-        convert_hook_installed = true;
-    } else {
-        ALOGE("❌ Convert DobbyHook failed: %d", ret);
+        ALOGE("❌ SendObjects DobbyHook failed: %d", ret);
     }
 }
 
@@ -235,18 +206,8 @@ Java_com_kail_location_xposed_FakeLocState_nativeSetWriteOffset(
     jclass clazz, 
     jlong offset
 ) {
-    write_offset = (uint64_t)offset;
-    ALOGI_TO_FILE("JNI: Set write offset: 0x%lx", write_offset);
-}
-
-JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeSetConvertOffset(
-    JNIEnv* env, 
-    jclass clazz, 
-    jlong offset
-) {
-    convert_offset = (uint64_t)offset;
-    ALOGI_TO_FILE("JNI: Set convert offset: 0x%lx", convert_offset);
+    send_objects_offset = (uint64_t)offset;
+    ALOGI_TO_FILE("JNI: Set send_objects offset: 0x%lx", send_objects_offset);
 }
 
 JNIEXPORT void JNICALL 
@@ -298,12 +259,8 @@ Java_com_kail_location_xposed_FakeLocState_nativeInitHook(
 
     gait::SensorSimulator::Get().Init();
     
-    if (write_offset != 0) {
-        install_write_hook();
-    }
-    
-    if (convert_offset != 0) {
-        install_convert_hook();
+    if (send_objects_offset != 0) {
+        install_send_objects_hook();
     }
     
     gait::SensorSimulator::Get().ReloadConfig();

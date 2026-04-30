@@ -15,15 +15,6 @@ import androidx.compose.ui.unit.dp
 import com.kail.location.R
 import kotlinx.coroutines.launch
 
-@Composable
-private fun getStringSafely(stringRes: Int, default: String): String {
-    return try {
-        stringResource(stringRes)
-    } catch (e: Exception) {
-        default
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDrawer(
@@ -170,7 +161,7 @@ fun AppDrawer(
             style = MaterialTheme.typography.labelSmall
         )
         NavigationDrawerItem(
-            label = { Text(getStringSafely(R.string.nav_menu_contact, "联系作者")) },
+            label = { Text(stringResource(R.string.nav_menu_contact)) },
             icon = { Icon(painterResource(R.drawable.ic_contact), contentDescription = null) },
             selected = false,
             onClick = { scope.launch { drawerState.close(); onNavigate(R.id.nav_contact) } }

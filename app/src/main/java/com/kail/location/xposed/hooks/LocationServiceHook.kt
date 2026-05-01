@@ -312,7 +312,7 @@ private val gnssPushRunnable = object : Runnable {
 internal object LocationServiceHook: BaseLocationHook() {
     val locationListeners = LinkedBlockingQueue<Pair<String, IInterface>>()
 
-    // A random command is generated to prevent some apps from detecting Portal
+    // A random command is generated to prevent some apps from detecting Kail
     operator fun invoke(classLoader: ClassLoader) {
         val cLocationManagerService = XposedHelpers.findClassIfExists("com.android.server.location.LocationManagerService", classLoader)
         if (cLocationManagerService == null) {
@@ -1092,7 +1092,7 @@ internal object LocationServiceHook: BaseLocationHook() {
 //                    override fun beforeHookedMethod(param: MethodHookParam?) {
 //                        if (param == null) return
 //
-//                        XposedBridge.log("[Portal] ILocationManager.Stub.Proxy: c = ${param.thisObject?.javaClass}, m = ${param.method}")
+//                        XposedBridge.log("[Kail] ILocationManager.Stub.Proxy: c = ${param.thisObject?.javaClass}, m = ${param.method}")
 //                    }
 //                })
 //            }

@@ -18,7 +18,7 @@ abstract class BaseDivineService {
      * so a binder is used to talk.
      */
     protected fun initDivineService(from: String, retryCount: Int = 0): Boolean {
-        // kail_location does not use the portal provider divine service model,
+        // kail_location does not use the kail provider divine service model,
         // so we always return true to allow hooks to proceed.
         return true
     }

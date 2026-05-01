@@ -13,7 +13,7 @@ abstract class BaseTelephonyHook: BaseDivineService() {
 //                }
 //
 //                if (FakeLocationConfig.DEBUG) {
-//                    println("[Portal] ${param.method.name}: injected!")
+//                    println("[Kail] ${param.method.name}: injected!")
 //                }
 //
 //                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R || param.result.javaClass.name == "android.os.Bundle") {
@@ -44,7 +44,7 @@ abstract class BaseTelephonyHook: BaseDivineService() {
 //
 //                if (FakeLocationConfig.enable) {
 //                    if (FakeLocationConfig.DEBUG) {
-//                        println("[Portal] ${param.method.name}: injected!")
+//                        println("[Kail] ${param.method.name}: injected!")
 //                    }
 //                    param.result = emptyList<NeighboringCellInfo>()
 //                }

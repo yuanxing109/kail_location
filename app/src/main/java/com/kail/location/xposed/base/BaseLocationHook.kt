@@ -115,7 +115,7 @@ abstract class BaseLocationHook: BaseDivineService() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 location.isMock = true
             }
-            location.extras?.putBoolean("portal.enable", true)
+            location.extras?.putBoolean("kail.enable", true)
             location.extras?.putBoolean("is_mock", true)
         }
 

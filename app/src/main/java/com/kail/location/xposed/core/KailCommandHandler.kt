@@ -19,7 +19,7 @@ internal object KailCommandHandler {
             val key = "k${Random.nextInt(100000, 999999)}${System.nanoTime()}"
             keyRef.set(key)
             out.putString("key", key)
-            KailLog.d(null, "XPOSED", "PORTAL接收：交换密钥", isHighFrequency = true)
+            KailLog.d(null, "XPOSED", "KAIL接收：交换密钥", isHighFrequency = true)
             return true
         }
 
@@ -30,20 +30,20 @@ internal object KailCommandHandler {
         when (commandId) {
             "is_start" -> {
                 out.putBoolean("is_start", FakeLocState.isEnabled())
-                KailLog.d(null, "XPOSED", "PORTAL接收：查询启动状态 is_start=${FakeLocState.isEnabled()}")
+                KailLog.d(null, "XPOSED", "KAIL接收：查询启动状态 is_start=${FakeLocState.isEnabled()}")
                 return true
             }
             "start" -> {
                 FakeLocState.setEnabled(true)
                 out.putBoolean("started", true)
                 out.getDouble("altitude", Double.NaN).let { if (!it.isNaN()) FakeLocState.setAltitude(it) }
-                KailLog.d(null, "XPOSED", "PORTAL接收：启动仿真 altitude=${out.getDouble("altitude", Double.NaN)}")
+                KailLog.d(null, "XPOSED", "KAIL接收：启动仿真 altitude=${out.getDouble("altitude", Double.NaN)}")
                 return true
             }
             "stop" -> {
                 FakeLocState.setEnabled(false)
                 out.putBoolean("stopped", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：停止仿真")
+                KailLog.d(null, "XPOSED", "KAIL接收：停止仿真")
                 return true
             }
             "get_location" -> {
@@ -52,35 +52,35 @@ internal object KailCommandHandler {
                     out.putDouble("lat", loc.latitude)
                     out.putDouble("lon", loc.longitude)
                     out.putBoolean("ok", true)
-                    KailLog.d(null, "XPOSED", "PORTAL接收：获取位置 lat=${loc.latitude} lon=${loc.longitude}", isHighFrequency = true)
+                    KailLog.d(null, "XPOSED", "KAIL接收：获取位置 lat=${loc.latitude} lon=${loc.longitude}", isHighFrequency = true)
                     return true
                 }
-                KailLog.d(null, "XPOSED", "PORTAL接收：获取位置失败", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：获取位置失败", isHighFrequency = true)
                 return false
             }
             "get_listener_size" -> {
                 out.putInt("size", LocationServiceHook.locationListeners.size)
-                KailLog.d(null, "XPOSED", "PORTAL接收：监听器数量 size=${LocationServiceHook.locationListeners.size}", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：监听器数量 size=${LocationServiceHook.locationListeners.size}", isHighFrequency = true)
                 return true
             }
             "broadcast_location" -> {
                 LocationServiceHook.callOnLocationChanged()
                 out.putBoolean("ok", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：广播当前位置", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：广播当前位置", isHighFrequency = true)
                 return true
             }
             "set_speed" -> {
                 val speed = out.getFloat("speed", 0f)
                 FakeLocState.setSpeed(speed)
                 out.putBoolean("ok", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：设置速度 speed=$speed", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：设置速度 speed=$speed", isHighFrequency = true)
                 return true
             }
             "set_bearing" -> {
                 val bearing = out.getDouble("bearing", 0.0).toFloat()
                 FakeLocState.setBearing(bearing)
                 out.putBoolean("ok", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：设置航向 bearing=$bearing", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：设置航向 bearing=$bearing", isHighFrequency = true)
                 return true
             }
             "set_altitude" -> {
@@ -88,7 +88,7 @@ internal object KailCommandHandler {
                 if (altitude.isNaN()) return false
                 FakeLocState.setAltitude(altitude)
                 out.putBoolean("ok", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：设置海拔 altitude=$altitude", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：设置海拔 altitude=$altitude", isHighFrequency = true)
                 return true
             }
             "update_location" -> {
@@ -97,14 +97,14 @@ internal object KailCommandHandler {
                 if (lat.isNaN() || lon.isNaN()) return false
                 FakeLocState.updateLocation(lat, lon)
                 out.putBoolean("ok", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：更新位置 lat=$lat lon=$lon", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：更新位置 lat=$lat lon=$lon", isHighFrequency = true)
                 return true
             }
             "set_step_enabled" -> {
                 val enabled = out.getBoolean("enabled", false)
                 FakeLocState.setStepEnabled(enabled)
                 out.putBoolean("ok", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：步频开关 enabled=$enabled", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：步频开关 enabled=$enabled", isHighFrequency = true)
                 return true
             }
             "set_step_cadence" -> {
@@ -112,7 +112,7 @@ internal object KailCommandHandler {
                 val spm = if (cadence <= 10f) cadence * 60f else cadence
                 FakeLocState.setStepCadenceSpm(spm)
                 out.putBoolean("ok", true)
-                KailLog.d(null, "XPOSED", "PORTAL接收：步频 cadence=$cadence", isHighFrequency = true)
+                KailLog.d(null, "XPOSED", "KAIL接收：步频 cadence=$cadence", isHighFrequency = true)
                 return true
             }
             "load_library" -> {
@@ -122,12 +122,12 @@ internal object KailCommandHandler {
                     val result = FakeLocState.loadNativeLibrary(path, writeOffset)
                     out.putBoolean("ok", result.first)
                     out.putString("result", result.second)
-                    KailLog.d(null, "XPOSED", "PORTAL接收：加载SO库 path=$path write_offset=$writeOffset result=${result.second}")
+                    KailLog.d(null, "XPOSED", "KAIL接收：加载SO库 path=$path write_offset=$writeOffset result=${result.second}")
                     KailLog.i(null, "NativeHook", "Library load result: ${result.first}, write_offset=$writeOffset")
                 } catch (e: Throwable) {
                     out.putBoolean("ok", false)
                     out.putString("result", e.message ?: "unknown error")
-                    KailLog.e(null, "XPOSED", "PORTAL接收：加载SO库失败 path=$path error=${e.message}")
+                    KailLog.e(null, "XPOSED", "KAIL接收：加载SO库失败 path=$path error=${e.message}")
                     KailLog.e(null, "NativeHook", "Library load error: ${e.message}")
                 }
                 return true
@@ -139,10 +139,10 @@ internal object KailCommandHandler {
                 try {
                     FakeLocState.setRouteSimulation(active, spm, mode)
                     out.putBoolean("ok", true)
-                    KailLog.d(null, "XPOSED", "PORTAL接收：路线模拟 active=$active spm=$spm mode=$mode")
+                    KailLog.d(null, "XPOSED", "KAIL接收：路线模拟 active=$active spm=$spm mode=$mode")
                 } catch (e: Throwable) {
                     out.putBoolean("ok", false)
-                    KailLog.e(null, "XPOSED", "PORTAL接收：设置路线模拟失败 error=${e.message}")
+                    KailLog.e(null, "XPOSED", "KAIL接收：设置路线模拟失败 error=${e.message}")
                 }
                 return true
             }
@@ -168,10 +168,10 @@ internal object KailCommandHandler {
                         FakeLoc.reportIntervalMs = it
                     }
                     out.putBoolean("ok", true)
-                    KailLog.d(null, "XPOSED", "PORTAL接收：批量配置更新")
+                    KailLog.d(null, "XPOSED", "KAIL接收：批量配置更新")
                 } catch (e: Throwable) {
                     out.putBoolean("ok", false)
-                    KailLog.e(null, "XPOSED", "PORTAL接收：批量配置更新失败 error=${e.message}")
+                    KailLog.e(null, "XPOSED", "KAIL接收：批量配置更新失败 error=${e.message}")
                 }
                 return true
             }

@@ -47,17 +47,17 @@ object BinderUtils {
         }
     }
 
-    /**
-     * Check whether the `PortalService` is started properly
-     */
+     /**
+      * Check whether the location service is started properly
+      */
     fun isLocationProviderEnabled(uid: Int): Boolean {
         val packageNames = getUidPackageNames(uid = uid)
         if (uid > 10000 && packageNames?.any {
-                !it.contains("moe.fuqiuluo.portal")
+                !it.contains("com.kail.location")
             } == false) {
             return true
         }
-        KailLog.w(null, "Kail_Xposed", "Someone try to find Portal: uid = $uid, packageName = ${packageNames?.joinToString()}")
+        KailLog.w(null, "Kail_Xposed", "Someone try to find Kail: uid = $uid, packageName = ${packageNames?.joinToString()}")
         return uid < 10000
     }
 

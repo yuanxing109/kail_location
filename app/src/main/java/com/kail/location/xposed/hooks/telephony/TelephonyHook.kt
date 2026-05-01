@@ -58,14 +58,14 @@ object TelephonyHook: BaseTelephonyHook() {
 //                hookCdma
 //            )
 //        }.onFailure {
-//            XposedBridge.log("[Portal] Hook CellIdentityCdma failed")
+//            XposedBridge.log("[Kail] Hook CellIdentityCdma failed")
 //        }
 
 //        kotlin.runCatching {
 //            val cCellIdentityGsm = XposedHelpers.findClass("android.telephony.CellIdentityGsm", classLoader)
 //
 //        }.onFailure {
-//            XposedBridge.log("[Portal] Hook CellIdentityGsm failed")
+//            XposedBridge.log("[Kail] Hook CellIdentityGsm failed")
 //        }
 
 //        XposedHelpers.findClassIfExists("android.telephony.TelephonyManager", classLoader)?.let {
@@ -83,7 +83,7 @@ object TelephonyHook: BaseTelephonyHook() {
 //                }
 //            }
 //        }.onFailure {
-//            XposedBridge.log("[Portal] ITelephony.Stub not found: ${it.stackTraceToString()}")
+//            XposedBridge.log("[Kail] ITelephony.Stub not found: ${it.stackTraceToString()}")
 //        }
 
         if (!FakeLoc.needDowngradeToCdma) return
@@ -537,10 +537,10 @@ object TelephonyHook: BaseTelephonyHook() {
 //    private fun onFetchServiceInstance(thisObject: Any) {
 //        val cITelephony = thisObject.javaClass
 //
-//        println("[Portal] found " + cITelephony.declaredMethods.mapNotNull {
+//        println("[Kail] found " + cITelephony.declaredMethods.mapNotNull {
 //            if (it.returnType.javaClass.name.contains("CellLocation")) {
 //                if (FakeLocationConfig.DEBUG) {
-//                    XposedBridge.log("[Portal] hook method: $it")
+//                    XposedBridge.log("[Kail] hook method: $it")
 //                }
 //                XposedBridge.hookMethod(it, hookGetCellLocation)
 //            } else null

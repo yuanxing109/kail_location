@@ -8,12 +8,12 @@ object MiuiTelephonyManagerHook: BaseTelephonyHook() {
 //        val cTelephonyManagerEx = XposedHelpers.findClassIfExists("miui.telephony.TelephonyManagerEx", classLoader)
 //
 //        if (FakeLocationConfig.DEBUG) {
-//            println("[Portal] MiuiTelephonyManager: $cMiuiTelephonyManager")
-//            println("[Portal] MiuiTelephonyManagerEx: $cTelephonyManagerEx")
+//            println("[Kail] MiuiTelephonyManager: $cMiuiTelephonyManager")
+//            println("[Kail] MiuiTelephonyManagerEx: $cTelephonyManagerEx")
 //        }
 //
 //        cMiuiTelephonyManager?.let { clazz ->
-//            println("[Portal] found " + clazz.declaredMethods.mapNotNull {
+//            println("[Kail] found " + clazz.declaredMethods.mapNotNull {
 //                if (it.returnType == CellLocation::class.java) {
 //                    XposedBridge.hookMethod(it, hookGetCellLocation)
 //                } else null
@@ -21,7 +21,7 @@ object MiuiTelephonyManagerHook: BaseTelephonyHook() {
 //        }
 //
 //        cTelephonyManagerEx?.let { clazz ->
-//            println("[Portal] found " + clazz.declaredMethods.mapNotNull {
+//            println("[Kail] found " + clazz.declaredMethods.mapNotNull {
 //                if (it.returnType == CellLocation::class.java) {
 //                    XposedBridge.hookMethod(it, hookGetCellLocation)
 //                } else null
@@ -30,7 +30,7 @@ object MiuiTelephonyManagerHook: BaseTelephonyHook() {
 //            var sizeGetNeighboringCellInfoMethod = XposedBridge.hookAllMethods(clazz, "getNeighboringCellInfo", hookGetNeighboringCellInfoList).size
 //            sizeGetNeighboringCellInfoMethod += XposedBridge.hookAllMethods(clazz, "getNeighboringCellInfoForSlot", hookGetNeighboringCellInfoList).size
 //            sizeGetNeighboringCellInfoMethod += XposedBridge.hookAllMethods(clazz, "getNeighboringCellInfoForSubscription", hookGetNeighboringCellInfoList).size
-//            println("[Portal] found $sizeGetNeighboringCellInfoMethod methods to hook in MiuiTelephonyManagerEx")
+//            println("[Kail] found $sizeGetNeighboringCellInfoMethod methods to hook in MiuiTelephonyManagerEx")
 //        }
     }
 }

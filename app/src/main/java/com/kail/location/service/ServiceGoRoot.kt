@@ -66,6 +66,7 @@ class ServiceGoRoot : Service() {
     private var stepEnabledCache: Boolean = false
     private var stepFreqCache: Double = 0.0
     private var simSchemeCache: Int = 0
+    private var stepSimEnabledCache: Boolean = true
     private var isRouteSimulationCache: Boolean = false
     private var speedFluctuation: Boolean = false
 
@@ -196,6 +197,7 @@ class ServiceGoRoot : Service() {
                                 mJoystickManager.setRoutePauseState(false)
                             }
                              kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
+                             kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
                              broadcastStatus()
                             KailLog.log(this, "ServiceGoRoot", "Resumed simulation (isStop=false)", isHighFrequency = false)
                         } catch (e: Exception) {
@@ -282,6 +284,7 @@ class ServiceGoRoot : Service() {
                              kailStartIfNeeded()
                              kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
                              kailSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
+                             kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
                             KailLog.i(this, "ServiceGoRoot", "step simulation updated: enabled=$stepEnabledCache, freq=$stepFreqCache")
                         } catch (e: Exception) {
                             KailLog.e(this, "ServiceGoRoot", "set_step error: ${e.message}")
@@ -295,6 +298,7 @@ class ServiceGoRoot : Service() {
             isRouteSimulationCache = intent.getBooleanExtra("EXTRA_IS_ROUTE_SIMULATION", false)
             speedFluctuation = intent.getBooleanExtra(EXTRA_SPEED_FLUCTUATION, false)
             simSchemeCache = PreferenceManager.getDefaultSharedPreferences(this).getString("setting_sim_scheme", "0")?.toIntOrNull() ?: 0
+            stepSimEnabledCache = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("setting_step_sim_enabled", true)
         }
 
         if (mNotification != null) {
@@ -777,6 +781,7 @@ class ServiceGoRoot : Service() {
             pushConfigToXposed()
             kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
             kailSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
+            kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
         } else {
             KailLog.e(this, "ServiceGoRoot", "kail start command failed")
         }

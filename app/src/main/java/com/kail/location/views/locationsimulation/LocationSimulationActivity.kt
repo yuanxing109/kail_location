@@ -37,6 +37,8 @@ class LocationSimulationActivity : BaseActivity() {
                 val locationInfo by viewModel.locationInfo.collectAsState()
                 val isSimulating by viewModel.isSimulating.collectAsState()
                 val isJoystickEnabled by viewModel.isJoystickEnabled.collectAsState()
+                val stepSimulationEnabled by viewModel.stepSimulationEnabled.collectAsState()
+                val stepCadenceSpm by viewModel.stepCadenceSpm.collectAsState()
                 val historyRecords by viewModel.historyRecords.collectAsState()
                 val selectedRecordId by viewModel.selectedRecordId.collectAsState()
                 val runMode by viewModel.runMode.collectAsState()
@@ -47,10 +49,14 @@ class LocationSimulationActivity : BaseActivity() {
                     locationInfo = locationInfo,
                     isSimulating = isSimulating,
                     isJoystickEnabled = isJoystickEnabled,
+                    stepSimulationEnabled = stepSimulationEnabled,
+                    stepCadenceSpm = stepCadenceSpm,
                     historyRecords = historyRecords,
                     selectedRecordId = selectedRecordId,
                     onToggleSimulation = viewModel::toggleSimulation,
                     onJoystickToggle = viewModel::setJoystickEnabled,
+                    onStepSimulationToggle = viewModel::setStepSimulationEnabled,
+                    onStepCadenceChange = viewModel::setStepCadenceSpm,
                     onRecordSelect = viewModel::selectRecord,
                     onRecordDelete = viewModel::deleteRecord,
                     onRecordRename = viewModel::renameRecord,

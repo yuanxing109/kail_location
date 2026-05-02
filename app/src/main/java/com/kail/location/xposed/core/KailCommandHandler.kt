@@ -42,8 +42,22 @@ internal object KailCommandHandler {
             }
             "stop" -> {
                 FakeLocState.setEnabled(false)
+                FakeLocState.setRouteSimulation(false)
+                FakeLoc.enableMockGnss = false
+                FakeLoc.enableMockWifi = false
+                FakeLoc.disableFusedLocation = false
+                FakeLoc.disableNetworkLocation = false
+                FakeLoc.hookWifi = false
+                FakeLoc.enableNMEA = false
+                FakeLoc.enableAGPS = false
+                FakeLoc.loopBroadcastLocation = false
+                FakeLoc.disableGetCurrentLocation = false
+                FakeLoc.disableRegisterLocationListener = false
+                FakeLoc.disableRequestGeofence = false
+                FakeLoc.disableGetFromLocation = false
+                FakeLoc.needDowngradeToCdma = false
                 out.putBoolean("stopped", true)
-                KailLog.d(null, "XPOSED", "KAIL接收：停止仿真")
+                KailLog.d(null, "XPOSED", "KAIL接收：停止仿真（已复位所有开关）")
                 return true
             }
             "get_location" -> {
@@ -117,6 +131,13 @@ internal object KailCommandHandler {
                 FakeLocState.setStepCadenceSpm(spm)
                 out.putBoolean("ok", true)
                 KailLog.d(null, "XPOSED", "KAIL接收：步频 cadence=$cadence", isHighFrequency = true)
+                return true
+            }
+            "set_step_sim_enabled" -> {
+                val enabled = out.getBoolean("enabled", false)
+                FakeLocState.setStepSimEnabled(enabled)
+                out.putBoolean("ok", true)
+                KailLog.d(null, "XPOSED", "KAIL接收：计步器模拟开关 enabled=$enabled", isHighFrequency = true)
                 return true
             }
             "load_library" -> {

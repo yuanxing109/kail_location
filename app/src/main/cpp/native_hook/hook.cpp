@@ -42,6 +42,7 @@ static int mSensorHandleStepDetector = -1;
 static int mSensorHandleStepCounter = -1;
 static int isMocking = 0;
 static int isAuthorized = 0;
+static int step_sim_enabled = 1;
 static float current_spm = 120.0f;
 static int step_event_counter = 0;
 
@@ -175,7 +176,7 @@ extern "C" void hooked_convert_to_sensor_event(void* param_1, void* param_2) {
 //    ALOGI("check: isMocking=%d, type=%d, SDT=%d, SSD=%d, SCT=%d, SSC=%d",
 //        isMocking, sensor_type, stepdetectorTrigger, mSensorHandleStepDetector,
 //        stepcounterTrigger, mSensorHandleStepCounter);
-    if ((isMocking != 0) && (sensor_type == 5)) {
+    if ((isMocking != 0) && step_sim_enabled && (sensor_type == 5)) {
         if ((stepdetectorTrigger == 1) && (mSensorHandleStepDetector != -1) &&
             (stepcounterTrigger == 1) && (mSensorHandleStepCounter != -1)) {
             if (step_event_counter < 4) {
@@ -359,6 +360,15 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetAuthorized(
     jint authorized
 ) {
     isAuthorized = (int)authorized;
+}
+
+JNIEXPORT void JNICALL 
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetStepSimEnabled(
+    JNIEnv* env, 
+    jclass clazz, 
+    jboolean enabled
+) {
+    step_sim_enabled = (enabled != JNI_FALSE) ? 1 : 0;
 }
 
 JNIEXPORT void JNICALL 

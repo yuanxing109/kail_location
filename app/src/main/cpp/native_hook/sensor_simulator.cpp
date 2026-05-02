@@ -231,7 +231,9 @@ void SensorSimulator::ApplyAccelerometerSine(sensors_event_t& e, double dt) {
     (void)dt;
 
     double t = static_cast<double>(e.timestamp) * kNsToSec;
-    double sps = static_cast<double>(current_spm_) / 60.0;
+    double effective_spm = 180.0 - static_cast<double>(current_spm_);
+    if (effective_spm < 30.0) effective_spm = 30.0;
+    double sps = effective_spm / 60.0;
     double omega = kTwoPi * sps;
     double omega2 = kTwoPi * sps * 2.0;
 
@@ -253,7 +255,9 @@ void SensorSimulator::ApplyLinearAccelerationSine(sensors_event_t& e, double dt)
     (void)dt;
 
     double t = static_cast<double>(e.timestamp) * kNsToSec;
-    double sps = static_cast<double>(current_spm_) / 60.0;
+    double effective_spm = 180.0 - static_cast<double>(current_spm_);
+    if (effective_spm < 30.0) effective_spm = 30.0;
+    double sps = effective_spm / 60.0;
     double omega = kTwoPi * sps;
     double omega2 = kTwoPi * sps * 2.0;
 
@@ -275,7 +279,9 @@ void SensorSimulator::ApplyGyroscopeSine(sensors_event_t& e, double dt) {
     (void)dt;
 
     double t = static_cast<double>(e.timestamp) * kNsToSec;
-    double sps = static_cast<double>(current_spm_) / 60.0;
+    double effective_spm = 180.0 - static_cast<double>(current_spm_);
+    if (effective_spm < 30.0) effective_spm = 30.0;
+    double sps = effective_spm / 60.0;
     double omega = kTwoPi * sps;
 
     double d0 = 12.0 * std::sin(omega * t + 0.5);

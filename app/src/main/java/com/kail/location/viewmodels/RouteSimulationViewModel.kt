@@ -455,10 +455,10 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
                 
                 val first = points.optJSONObject(0) ?: continue
                 val last = points.optJSONObject(points.length() - 1) ?: continue
-                val s = obj.optString("startName",
-                    String.format("%.6f,%.6f", first.optDouble("lat"), first.optDouble("lng")))
-                val e = obj.optString("endName",
-                    String.format("%.6f,%.6f", last.optDouble("lat"), last.optDouble("lng")))
+                val coordS = String.format("%.6f,%.6f", first.optDouble("lat"), first.optDouble("lng"))
+                val coordE = String.format("%.6f,%.6f", last.optDouble("lat"), last.optDouble("lng"))
+                val s = obj.optString("startName", coordS).let { if (it.isBlank() || it == "null") coordS else it }
+                val e = obj.optString("endName", coordE).let { if (it.isBlank() || it == "null") coordE else it }
                 list.add(time to RouteInfo(time.toString(), s, e, ""))
             }
             list.sortByDescending { it.first }
@@ -599,7 +599,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
             val first = points.optJSONObject(0) ?: return
             val last = points.optJSONObject(points.length() - 1) ?: return
             reverseGeocode(first.optDouble("lat"), first.optDouble("lng")) { name ->
-                obj.put("startName", name)
+                if (name.isNotBlank() && name != "null") obj.put("startName", name)
                 val prefs = PreferenceManager.getDefaultSharedPreferences(getApplication())
                 val res = prefs.getString("saved_routes", "[]") ?: "[]"
                 val arr = JSONArray(res)
@@ -607,7 +607,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
                 _historyRoutes.value = parseRoutes(arr.toString())
             }
             reverseGeocode(last.optDouble("lat"), last.optDouble("lng")) { name ->
-                obj.put("endName", name)
+                if (name.isNotBlank() && name != "null") obj.put("endName", name)
                 val prefs = PreferenceManager.getDefaultSharedPreferences(getApplication())
                 val res = prefs.getString("saved_routes", "[]") ?: "[]"
                 val arr = JSONArray(res)

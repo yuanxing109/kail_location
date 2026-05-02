@@ -154,7 +154,6 @@ fun RouteSimulationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(Color(0xFFF5F5F5))
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize()
@@ -207,7 +206,6 @@ fun RouteSimulationScreen(
                     ) {
                         items(historyRoutes) { route ->
                             Card(
-                                colors = CardDefaults.cardColors(containerColor = Color.White),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                                 shape = RoundedCornerShape(8.dp),
                                 modifier = Modifier.fillMaxWidth().clickable { viewModel.selectRoute(route.id) }
@@ -218,8 +216,8 @@ fun RouteSimulationScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
-                                        Text(text = route.startName, fontSize = 16.sp, color = Color.Black)
-                                        Text(text = route.endName, fontSize = 14.sp, color = Color.Gray)
+                                        Text(text = route.startName, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text(text = route.endName, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                                     }
                                     Row {
                                         IconButton(onClick = { renameTarget = route; renameText = route.startName }) {
@@ -296,7 +294,6 @@ fun RouteCard(
     onPauseResume: (() -> Unit)? = null
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier.fillMaxWidth()
@@ -331,7 +328,7 @@ fun RouteCard(
                         modifier = Modifier
                             .width(1.dp)
                             .height(24.dp)
-                            .background(Color.LightGray) // Ideally dashed
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
                     )
                     
                     // End Icon
@@ -344,24 +341,18 @@ fun RouteCard(
                 }
 
                 // Route Details
-                Column(modifier = Modifier.weight(1f)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 24.dp) // Space for the line
-                    ) {
-                        Text(
-                            text = route.startName + route.distance,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = route.endName,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                    }
+                Column(modifier = Modifier.weight(1f).padding(top = 4.dp)) {
+                    Text(
+                        text = route.startName + route.distance,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = route.endName,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
 
@@ -471,7 +462,6 @@ fun SettingsDialog(
     
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -484,7 +474,7 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("运动速度", fontSize = 14.sp, color = Color.Black)
+                    Text("运动速度", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
     Text("${settings.speed} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                 }
 
@@ -526,7 +516,7 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("速度浮动", fontSize = 14.sp, color = Color.Black)
+                    Text("速度浮动", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                     Switch(
                         checked = settings.speedFluctuation,
                         onCheckedChange = { onSettingsChange(settings.copy(speedFluctuation = it)) },
@@ -544,7 +534,7 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("步频模拟", fontSize = 14.sp, color = if (canUseStepFreq) Color.Black else Color.Gray)
+                    Text("步频模拟", fontSize = 14.sp, color = if (canUseStepFreq) MaterialTheme.colorScheme.onSurface else Color.Gray)
                     Switch(
                         checked = settings.stepFreqSimulation,
                         onCheckedChange = { 
@@ -581,7 +571,7 @@ fun SettingsDialog(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("步频", fontSize = 14.sp, color = Color.Black)
+                        Text("步频", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                         Text("${settings.stepCadenceSpm.toInt()} 步/分钟 · 约 ${((kmh * 10).toInt() / 10f)} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                     }
                     Slider(

@@ -1,6 +1,5 @@
 package com.kail.location.views.nfcsimulation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -142,7 +141,6 @@ fun NfcSimulationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(Color(0xFFF5F5F5))
             ) {
                 // NFC Status
                 item {
@@ -150,8 +148,7 @@ fun NfcSimulationScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(
                             modifier = Modifier
@@ -185,8 +182,7 @@ fun NfcSimulationScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Row(
@@ -228,8 +224,7 @@ fun NfcSimulationScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -332,8 +327,7 @@ fun NfcSimulationScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
                                 .clickable { viewModel.applyFromHistory(item) },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -354,12 +348,12 @@ fun NfcSimulationScreen(
                                         text = item.content,
                                         fontSize = 14.sp,
                                         maxLines = 2,
-                                        color = if (item.name.isNotBlank()) Color.Gray else Color.Black
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (item.name.isNotBlank()) 0.6f else 0.87f)
                                     )
                                     Text(
                                         text = "${item.type} • ${formatTime(item.timestamp)}",
                                         fontSize = 12.sp,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )
                                 }
                                 IconButton(onClick = {

@@ -318,9 +318,6 @@ class NavigationSimulationViewModel(application: Application) : AndroidViewModel
                 .from(stNode)
                 .to(enNode)
         )
-        
-        // Save to history (Mock implementation)
-        addToHistory(_startPoint.value, _endPoint.value)
     }
 
     private fun startSimulationService(points: List<LatLng>) {
@@ -378,6 +375,7 @@ class NavigationSimulationViewModel(application: Application) : AndroidViewModel
     fun chooseCandidate(index: Int) {
         val routes = _candidateRoutes.value
         if (index in routes.indices) {
+            addToHistory(_startPoint.value, _endPoint.value)
             startSimulationService(routes[index])
             _candidateRoutes.value = emptyList()
         }

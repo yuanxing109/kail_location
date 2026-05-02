@@ -127,6 +127,16 @@ internal object FakeLocState {
 
     fun getSimScheme(): Int = simSchemeRef.get()
 
+    fun setStepSimEnabled(enabled: Boolean) {
+        if (nativeLibraryLoaded) {
+            try {
+                nativeSetStepSimEnabled(enabled)
+            } catch (e: Exception) {
+                KailLog.e(null, TAG, "Failed to set step sim enabled: ${e.message}")
+            }
+        }
+    }
+
     /**
      * Set gait parameters for native hook
      */
@@ -366,6 +376,7 @@ internal object FakeLocState {
     private external fun nativeSetAuthorized(authorized: Int)
     private external fun nativeSetRouteSimulation(active: Boolean, spm: Float, mode: Int)
     private external fun nativeSetGaitParams(spm: Float, mode: Int, scheme: Int, enable: Boolean)
+    private external fun nativeSetStepSimEnabled(enabled: Boolean)
     private external fun nativeReloadConfig(): Boolean
     private external fun nativeInitHook()
 }

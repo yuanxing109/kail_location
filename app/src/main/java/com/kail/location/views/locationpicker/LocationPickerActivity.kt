@@ -688,9 +688,17 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
             val intent = Intent(this, serviceClass)
             intent.putExtra(LAT_MSG_ID, mMarkLatLngMap.latitude)
             intent.putExtra(LNG_MSG_ID, mMarkLatLngMap.longitude)
+            intent.putExtra(ALT_MSG_ID, sharedPreferences.getString("setting_altitude", "55.0")?.toDoubleOrNull() ?: 55.0)
             intent.putExtra("EXTRA_COORD_TYPE", "BD09")
             val joystickEnabled = sharedPreferences.getBoolean("setting_joystick_enabled", true)
             intent.putExtra("EXTRA_JOYSTICK_ENABLED", joystickEnabled)
+            intent.putExtra("EXTRA_IS_ROUTE_SIMULATION", false)
+            if (runMode == "root") {
+                val stepEnabled = sharedPreferences.getBoolean("setting_step_simulation_enabled", false)
+                val cadence = sharedPreferences.getFloat("setting_step_cadence_spm", 120f)
+                intent.putExtra(ServiceGoRoot.EXTRA_STEP_ENABLED, stepEnabled)
+                intent.putExtra(ServiceGoRoot.EXTRA_STEP_FREQ, cadence)
+            }
             KailLog.i(this, "LocationPickerActivity", "Putting extras: lat=${mMarkLatLngMap.latitude}, lng=${mMarkLatLngMap.longitude}, type=BD09, runMode=$runMode, joystick=$joystickEnabled")
 
             // 自动保存历史记录

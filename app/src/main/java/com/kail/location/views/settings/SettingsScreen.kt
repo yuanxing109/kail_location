@@ -67,6 +67,7 @@ fun SettingsScreen(
     val loopBroadcast by viewModel.loopBroadcast.collectAsState()
     val hideMock by viewModel.hideMock.collectAsState()
     val simScheme by viewModel.simScheme.collectAsState()
+    val stepSimEnabled by viewModel.stepSimEnabled.collectAsState()
 
     Scaffold(
         topBar = {
@@ -217,6 +218,16 @@ fun SettingsScreen(
                     viewModel.updateStringPreference(SettingsViewModel.KEY_SIM_SCHEME, it)
                     FakeLocState.setSimScheme(it.toIntOrNull() ?: 0)
                 }
+            )
+
+            SwitchPreference(
+                title = "计步器模拟",
+                checked = stepSimEnabled,
+                onCheckedChange = {
+                    viewModel.updateBooleanPreference(SettingsViewModel.KEY_STEP_SIM_ENABLED, it)
+                    FakeLocState.setStepSimEnabled(it)
+                },
+                summary = "控制步数检测器(18)与计步器(19)事件的模拟"
             )
 
             // ===== Group: 拦截控制 =====

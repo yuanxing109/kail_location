@@ -100,11 +100,11 @@ class RouteSimulationActivity : BaseActivity(), SensorEventListener {
                             try {
                                 val intent = Intent(Intent.ACTION_SENDTO).apply {
                                     data = android.net.Uri.parse("mailto:kailkali23143@gmail.com")
-                                    putExtra(Intent.EXTRA_SUBJECT, "联系作者")
+                                    putExtra(Intent.EXTRA_SUBJECT, getString(R.string.nav_menu_contact))
                                 }
                                 startActivity(intent)
                             } catch (e: Exception) {
-                                Toast.makeText(this@RouteSimulationActivity, "无法打开邮件应用", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@RouteSimulationActivity, getString(R.string.error_cannot_open_email), Toast.LENGTH_SHORT).show()
                             }
                         }
                         R.id.nav_source_code -> {
@@ -112,7 +112,7 @@ class RouteSimulationActivity : BaseActivity(), SensorEventListener {
                                 val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/noellegazelle6/kail_location"))
                                 startActivity(intent)
                             } catch (e: Exception) {
-                                Toast.makeText(this@RouteSimulationActivity, "无法打开浏览器", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@RouteSimulationActivity, getString(R.string.error_cannot_open_browser), Toast.LENGTH_SHORT).show()
                             }
                         }
                         R.id.nav_dev -> {
@@ -120,14 +120,14 @@ class RouteSimulationActivity : BaseActivity(), SensorEventListener {
                                 val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                                 startActivity(intent)
                             } catch (e: Exception) {
-                                Toast.makeText(this@RouteSimulationActivity, "无法打开开发者选项", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@RouteSimulationActivity, getString(R.string.app_error_dev), Toast.LENGTH_SHORT).show()
                             }
                         }
                         R.id.nav_update -> {
                             viewModel.checkUpdate(this@RouteSimulationActivity)
                         }
                         else -> {
-                            Toast.makeText(this@RouteSimulationActivity, "功能开发中...", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@RouteSimulationActivity, getString(R.string.error_under_development), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -144,10 +144,10 @@ class RouteSimulationActivity : BaseActivity(), SensorEventListener {
                             onStartSimulation = { settings ->
                                 try {
                                     if (!viewModel.startSimulation()) {
-                                        android.widget.Toast.makeText(this@RouteSimulationActivity, "请先添加并保存路线", android.widget.Toast.LENGTH_SHORT).show()
+                                        android.widget.Toast.makeText(this@RouteSimulationActivity, getString(R.string.route_sim_need_route), android.widget.Toast.LENGTH_SHORT).show()
                                     }
                                 } catch (e: Exception) {
-                                    android.widget.Toast.makeText(this@RouteSimulationActivity, "启动模拟失败", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(this@RouteSimulationActivity, getString(R.string.route_sim_start_failed), android.widget.Toast.LENGTH_SHORT).show()
                                 }
                             },
                             onStopSimulation = {

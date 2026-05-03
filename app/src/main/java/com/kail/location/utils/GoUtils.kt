@@ -17,6 +17,7 @@ import android.provider.Settings
 import android.view.Gravity
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.kail.location.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -316,9 +317,9 @@ object GoUtils {
     @JvmStatic
     fun showEnableMockLocationDialog(context: Context) {
         AlertDialog.Builder(context)
-            .setTitle("启用位置模拟") //这里是表头的内容
-            .setMessage("请在\"开发者选项→选择模拟位置信息应用\"中进行设置") //这里是中间显示的具体信息
-            .setPositiveButton("设置") { dialog, which ->
+            .setTitle(context.getString(R.string.goutils_enable_mock_title))
+            .setMessage(context.getString(R.string.goutils_enable_mock_msg))
+            .setPositiveButton(context.getString(R.string.goutils_settings)) { dialog, which ->
                 try {
                     val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -327,7 +328,7 @@ object GoUtils {
                     e.printStackTrace()
                 }
             }
-            .setNegativeButton("取消") { dialog, which ->
+            .setNegativeButton(context.getString(R.string.goutils_cancel)) { dialog, which ->
             }
             .show()
     }
@@ -340,9 +341,9 @@ object GoUtils {
     @JvmStatic
     fun showEnableFloatWindowDialog(context: Context) {
         AlertDialog.Builder(context)
-            .setTitle("启用悬浮窗") //这里是表头的内容
-            .setMessage("为了模拟定位的稳定性，建议开启\"显示悬浮窗\"选项") //这里是中间显示的具体信息
-            .setPositiveButton("设置") { dialog, which ->
+            .setTitle(context.getString(R.string.goutils_enable_overlay_title))
+            .setMessage(context.getString(R.string.goutils_enable_overlay_msg))
+            .setPositiveButton(context.getString(R.string.goutils_settings)) { dialog, which ->
                 try {
                     val intent = Intent(
                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -354,7 +355,7 @@ object GoUtils {
                     e.printStackTrace()
                 }
             }
-            .setNegativeButton("取消") { dialog, which ->
+            .setNegativeButton(context.getString(R.string.goutils_cancel)) { dialog, which ->
             }
             .show()
     }
@@ -367,9 +368,9 @@ object GoUtils {
     @JvmStatic
     fun showEnableGpsDialog(context: Context) {
         AlertDialog.Builder(context)
-            .setTitle("启用定位服务") //这里是表头的内容
-            .setMessage("是否开启 GPS 定位服务?") //这里是中间显示的具体信息
-            .setPositiveButton("确定") { dialog, which ->
+            .setTitle(context.getString(R.string.goutils_enable_gps_title))
+            .setMessage(context.getString(R.string.goutils_enable_gps_msg))
+            .setPositiveButton(context.getString(R.string.goutils_ok)) { dialog, which ->
                 try {
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     context.startActivity(intent)
@@ -377,7 +378,7 @@ object GoUtils {
                     e.printStackTrace()
                 }
             }
-            .setNegativeButton("取消") { dialog, which ->
+            .setNegativeButton(context.getString(R.string.goutils_cancel)) { dialog, which ->
             }
             .show()
     }
@@ -390,9 +391,9 @@ object GoUtils {
     @JvmStatic
     fun showDisableWifiDialog(context: Context) {
         AlertDialog.Builder(context)
-            .setTitle("警告")
-            .setMessage("开启 WIFI 后（即使没有连接热点）将导致定位闪回真实位置。建议关闭 WIFI，使用移动流量进行游戏！")
-            .setPositiveButton("去关闭") { dialog, which ->
+            .setTitle(context.getString(R.string.goutils_warning))
+            .setMessage(context.getString(R.string.goutils_wifi_warning))
+            .setPositiveButton(context.getString(R.string.goutils_turn_off)) { dialog, which ->
                 try {
                     val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
                     context.startActivity(intent)
@@ -400,7 +401,7 @@ object GoUtils {
                     e.printStackTrace()
                 }
             }
-            .setNegativeButton("忽略") { dialog, which ->
+            .setNegativeButton(context.getString(R.string.goutils_ignore)) { dialog, which ->
             }
             .show()
     }

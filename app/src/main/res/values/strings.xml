@@ -127,7 +127,7 @@
     <string name="nav_menu_more">更多</string>
     <string name="nav_menu_upgrade">检测更新</string>
     <string name="nav_menu_feedback">问题反馈</string>
-    <string name="nav_menu_contact">联系作者：kailkali23143@gmail.com</string>
+    <string name="nav_menu_contact">联系作者</string>
     <string name="nav_app_tips">仅供学习使用，否则后果自负!</string>
     <string name="nav_menu_sponsor">赞助作者</string>
     <string name="nav_menu_github">开源仓库</string>
@@ -163,4 +163,220 @@
     <string name="update_ignore">忽略一次</string>
     <string name="update_time">更新时间：</string>
     <string name="update_commit">提交信息：</string>
+
+    <!-- Navigation Simulation -->
+    <string name="nav_sim_title">模拟导航</string>
+    <string name="nav_sim_start">开始模拟</string>
+    <string name="nav_sim_stop">结束模拟</string>
+    <string name="nav_sim_pause">暂停</string>
+    <string name="nav_sim_resume">继续</string>
+    <string name="nav_sim_planning">规划中...</string>
+    <string name="nav_sim_start_point">起点:</string>
+    <string name="nav_sim_end_point">终点:</string>
+    <string name="nav_sim_select_start">请选择起点</string>
+    <string name="nav_sim_select_end">请选择终点</string>
+    <string name="nav_sim_multi_route">多路线</string>
+    <string name="nav_sim_history_title">历史数据 (最多显示10条)</string>
+    <string name="nav_sim_clear">清空</string>
+    <string name="nav_sim_switch_route">切换路线</string>
+    <string name="nav_sim_choose_route">选择路线</string>
+    <string name="nav_sim_speed_dialog_title">设置速度 (km/h)</string>
+    <string name="nav_sim_speed">速度</string>
+    <string name="nav_sim_ok">确定</string>
+    <string name="nav_sim_cancel">取消</string>
+
+    <!-- Route Simulation -->
+    <string name="route_sim_title">路线模拟</string>
+    <string name="route_sim_target">目标路线</string>
+    <string name="route_sim_history">历史路线</string>
+    <string name="route_sim_no_name">暂无</string>
+    <string name="route_sim_start">启动模拟</string>
+    <string name="route_sim_stop">结束模拟</string>
+    <string name="route_sim_pause">暂停</string>
+    <string name="route_sim_resume">继续</string>
+    <string name="route_sim_speed_btn">速/频</string>
+    <string name="route_sim_loop">循环</string>
+    <string name="route_sim_rename_title">重命名路线</string>
+    <string name="route_sim_rename_ok">确定</string>
+    <string name="route_sim_rename_cancel">取消</string>
+    <string name="route_sim_need_route">请先添加并保存路线</string>
+    <string name="route_sim_start_failed">启动模拟失败</string>
+
+    <!-- Route Plan -->
+    <string name="route_plan_search_hint">搜索地点</string>
+    <string name="route_plan_map_type">选择地图类型</string>
+    <string name="route_plan_normal">普通地图</string>
+    <string name="route_plan_satellite">卫星地图</string>
+    <string name="route_plan_coord_title">输入坐标</string>
+    <string name="route_plan_latitude">纬度</string>
+    <string name="route_plan_longitude">经度</string>
+    <string name="route_plan_coord_type">BD09坐标 (默认WGS84)</string>
+    <string name="route_plan_ok">确定</string>
+    <string name="route_plan_cancel">取消</string>
+
+    <!-- Settings -->
+    <string name="setting_sim_scheme">传感器模拟方案</string>
+    <string name="setting_sim_fourier">傅里叶级数 (Fourier)</string>
+    <string name="setting_sim_sine_noise">正弦+随机扰动 (Sine+Noise)</string>
+    <string name="setting_step_sim">计步器模拟</string>
+    <string name="setting_step_sim_summary">控制步数检测器(18)与计步器(19)事件的模拟</string>
+    <string name="setting_group_satellite_and_signal">卫星与信号模拟</string>
+    <string name="setting_group_intercept">拦截与降级控制</string>
+    <string name="setting_allow_get_current">允许 GetCurrentLocation</string>
+    <string name="setting_allow_get_current_summary">关闭则拦截 getCurrentLocation 请求</string>
+    <string name="setting_allow_register_listener">允许注册位置监听器</string>
+    <string name="setting_allow_register_listener_summary">关闭则拦截 registerLocationListener</string>
+    <string name="setting_allow_geofence">允许地理围栏请求</string>
+    <string name="setting_allow_geofence_summary">关闭则拦截 addGeofence</string>
+    <string name="setting_allow_get_location">允许位置获取</string>
+    <string name="setting_allow_get_location_summary">关闭则拦截 getFromLocation 等反查</string>
+    <string name="setting_disable_fused">禁用融合定位</string>
+    <string name="setting_disable_fused_summary">阻止应用使用 fused provider</string>
+    <string name="setting_downgrade_cdma">网络定位降级为 CDMA</string>
+    <string name="setting_downgrade_cdma_summary">将网络定位结果伪装为基站定位</string>
+    <string name="setting_disable_wifi_scan">禁用扫描 WiFi 列表</string>
+    <string name="setting_disable_wifi_scan_summary">阻止应用获取真实 WiFi 扫描结果</string>
+    <string name="setting_group_anti_detect">反检测与防拉回</string>
+    <string name="setting_hide_mock">隐藏模拟位置</string>
+    <string name="setting_hide_mock_summary">移除 Location.isFromMockProvider 标记</string>
+    <string name="setting_anti_pullback">反定位拉回</string>
+    <string name="setting_anti_pullback_summary">持续广播位置，一定程度解决被系统拉回</string>
+    <string name="setting_group_other">其他</string>
+    <string name="setting_baidu_key">百度地图 Key (需重启生效)</string>
+    <string name="setting_enable_log">启用日志</string>
+    <string name="setting_enable_log_summary">控制控制台输出与本地文件保存</string>
+    <string name="setting_map_zoom">悬浮窗地图缩放比例</string>
+    <string name="setting_map_zoom_summary">范围 10-21，数值越大地图越详细</string>
+    <string name="setting_current_version">当前版本</string>
+    <string name="setting_not_set">未设置</string>
+    <string name="setting_ok">确定</string>
+    <string name="setting_cancel">取消</string>
+
+    <!-- NFC Simulation -->
+    <string name="nfc_sim_title">NFC模拟</string>
+    <string name="nfc_sim_status">NFC状态</string>
+    <string name="nfc_sim_enabled">正常</string>
+    <string name="nfc_sim_disabled">未开启</string>
+    <string name="nfc_sim_read_success">读取成功</string>
+    <string name="nfc_sim_clear">清除</string>
+    <string name="nfc_sim_tag_id">标签ID: %s</string>
+    <string name="nfc_sim_tag_type">标签类型: %s</string>
+    <string name="nfc_sim_content">内容: %s</string>
+    <string name="nfc_sim_send_title">模拟NFC发送</string>
+    <string name="nfc_sim_url">URL地址</string>
+    <string name="nfc_sim_package">应用包名</string>
+    <string name="nfc_sim_send">发送</string>
+    <string name="nfc_sim_history">历史记录</string>
+    <string name="nfc_sim_clear_history">清空</string>
+    <string name="nfc_sim_no_history">暂无历史记录</string>
+    <string name="nfc_sim_rename_dialog_title">重命名</string>
+    <string name="nfc_sim_rename_name">名称</string>
+    <string name="nfc_sim_rename_ok">确定</string>
+    <string name="nfc_sim_rename_cancel">取消</string>
+    <string name="nfc_sim_rename_content_desc">重命名</string>
+    <string name="nfc_sim_delete_content_desc">删除</string>
+    <string name="nfc_sim_help_title">使用说明</string>
+    <string name="nfc_sim_help_content">1. 扫描：靠近NFC标签自动读取\n2. 发送：填入URL/包名后点击发送\n3. 历史：点击自动填入，长按重命名</string>
+    <string name="nfc_sim_read_failed">读取失败: %s</string>
+    <string name="nfc_sim_input_hint">请输入URL或包名</string>
+    <string name="nfc_sim_send_failed">发送失败: %s</string>
+    <string name="nfc_sim_sent">已发送: %s</string>
+    <string name="nfc_sim_opened">已打开: %s</string>
+    <string name="nfc_sim_need_nfc">请先开启NFC</string>
+
+    <!-- Common -->
+    <string name="common_warning">警告</string>
+    <string name="common_delete_all_confirm">确定要删除全部历史记录吗?</string>
+    <string name="common_delete_item_confirm">确定要删除该项历史记录吗?</string>
+    <string name="common_confirm">确认</string>
+    <string name="common_edit">编辑</string>
+    <string name="common_delete">删除</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_ok">确定</string>
+
+    <!-- Drawer -->
+    <string name="drawer_env_check">环境检测</string>
+    <string name="drawer_ok">确定</string>
+    <string name="drawer_nav_sim">模拟导航</string>
+    <string name="drawer_nfc_sim">NFC模拟</string>
+    <string name="drawer_run_mode">运行模式</string>
+
+    <!-- Sponsor -->
+    <string name="sponsor_copied">已复制</string>
+    <string name="sponsor_copy_address">复制地址</string>
+
+    <!-- Welcome -->
+    <string name="welcome_read">已阅读</string>
+    <string name="welcome_and">和</string>
+    <string name="welcome_agreement_text">《用户协议》</string>
+    <string name="welcome_privacy_text">《隐私政策》</string>
+
+    <!-- Joystick -->
+    <string name="joystick_speed">摇杆速度: %s km/h</string>
+    <string name="joystick_progress">进度:</string>
+    <string name="joystick_speed_label">速度:</string>
+    <string name="joystick_modify">修改</string>
+    <string name="joystick_route_progress">当前进度(道路): %s</string>
+
+    <!-- Go Utils Dialogs -->
+    <string name="goutils_enable_mock_title">启用位置模拟</string>
+    <string name="goutils_enable_mock_msg">请在\"开发者选项→选择模拟位置信息应用\"中进行设置</string>
+    <string name="goutils_settings">设置</string>
+    <string name="goutils_cancel">取消</string>
+    <string name="goutils_enable_overlay_title">启用悬浮窗</string>
+    <string name="goutils_enable_overlay_msg">为了模拟定位的稳定性，建议开启\"显示悬浮窗\"选项</string>
+    <string name="goutils_enable_gps_title">启用定位服务</string>
+    <string name="goutils_enable_gps_msg">是否开启 GPS 定位服务?</string>
+    <string name="goutils_ok">确定</string>
+    <string name="goutils_warning">警告</string>
+    <string name="goutils_wifi_warning">开启 WIFI 后（即使没有连接热点）将导致定位闪回真实位置。建议关闭 WIFI，使用移动流量进行游戏！</string>
+    <string name="goutils_turn_off">去关闭</string>
+    <string name="goutils_ignore">忽略</string>
+
+    <!-- ViewModel messages -->
+    <string name="vm_update_failed">检查更新失败: %s</string>
+    <string name="vm_up_to_date">当前已是最新版本</string>
+    <string name="vm_search_city">全国</string>
+    <string name="vm_need_location_permission">需要位置权限才能启动模拟</string>
+    <string name="vm_unknown_location">未知地点</string>
+    <string name="vm_step_root_required">步频模拟需要 ROOT 模式</string>
+
+    <!-- History VM -->
+    <string name="history_vm_coord_wgs84">[经度:%1$s 纬度:%2$s]</string>
+    <string name="history_vm_coord_bd09">[经度:%1$s 纬度:%2$s]</string>
+    <string name="history_vm_offset">经度偏移: %.2f米\n纬度偏移: %.2f米</string>
+
+    <!-- Service -->
+    <string name="service_grant_overlay">请授予悬浮窗权限</string>
+    <string name="service_overlay_failed">悬浮窗初始化失败: %s</string>
+    <string name="service_set_mock_app">请在开发者选项中设置此应用为模拟位置应用</string>
+    <!-- Route Simulation Settings Dialog -->
+    <string name="route_sim_speed_text">运动速度</string>
+    <string name="route_sim_speed_fluctuation">速度浮动</string>
+    <string name="route_sim_step_text">步频模拟</string>
+    <string name="route_sim_cadence_text">步频</string>
+    <string name="route_sim_cadence_format">%d 步/分钟 · 约 %.1f km/h</string>
+    <string name="route_sim_step_root_required">步频模拟需要 ROOT 模式</string>
+
+    <!-- Common error messages -->
+    <string name="error_cannot_open_email">无法打开邮件应用</string>
+    <string name="error_cannot_open_browser">无法打开浏览器</string>
+    <string name="error_under_development">功能开发中...</string>
+    <string name="download_progress">下载中… %d%%</string>
+
+    <!-- Settings remaining -->
+    <string name="setting_mock_speed">模拟移动速度 (m/s)</string>
+    <string name="setting_accuracy_title">定位抖动范围 (米)</string>
+    <string name="setting_min_satellites">最少模拟卫星数量</string>
+    <string name="setting_min_satellites_summary">仅支持北斗卫星</string>
+    <string name="setting_report_interval">上报位置频率 (ms)</string>
+    <string name="setting_report_interval_summary">单位毫秒，默认 100ms</string>
+    <string name="setting_gps_satellite_title">模拟 GPS 卫星信号</string>
+    <string name="setting_gps_satellite_summary">伪造北斗卫星数量和信号强度</string>
+    <string name="setting_agps_title">启用 AGPS 模块</string>
+    <string name="setting_agps_summary">辅助定位相关（实验性）</string>
+    <string name="setting_nmea_title">启用 NMEA 模块</string>
+    <string name="setting_nmea_summary">伪造 NMEA 数据输出</string>
+    <string name="setting_wlan_title">模拟 WLAN 数据</string>
+    <string name="setting_wlan_summary">伪造 WiFi 定位数据</string>
 </resources>

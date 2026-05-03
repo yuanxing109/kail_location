@@ -140,7 +140,7 @@ class ServiceGoNoroot : Service() {
         try {
             KailLog.i(this, "ServiceGoNoroot", "4. initJoyStick")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                GoUtils.DisplayToast(applicationContext, "请授予悬浮窗权限")
+                GoUtils.DisplayToast(applicationContext, getString(R.string.service_grant_overlay))
             }
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
             val joystickEnabledPref = prefs.getBoolean("setting_joystick_enabled", false)
@@ -154,7 +154,7 @@ class ServiceGoNoroot : Service() {
             }
         } catch (e: Throwable) {
             KailLog.e(this, "ServiceGoNoroot", "Error initializing JoyStick: ${e.message}")
-            GoUtils.DisplayToast(applicationContext, "悬浮窗初始化失败: ${e.message}")
+            GoUtils.DisplayToast(applicationContext, getString(R.string.service_overlay_failed, e.message))
         }
 
         broadcastStatus()
@@ -353,7 +353,7 @@ class ServiceGoNoroot : Service() {
                                 mJoystickManager.show()
                             }
                         } else {
-                            GoUtils.DisplayToast(applicationContext, "请授予悬浮窗权限")
+                            GoUtils.DisplayToast(applicationContext, getString(R.string.service_grant_overlay))
                         }
                     } else {
                         mJoystickManager.hide()
@@ -689,7 +689,7 @@ class ServiceGoNoroot : Service() {
             KailLog.e(this, "ServiceGoNoroot", "addTestProviderGPS error: ${e.message}")
             if (e.message?.contains("not allowed to perform MOCK_LOCATION") == true) {
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(this, "请在开发者选项中设置此应用为模拟位置应用", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.service_set_mock_app), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -759,7 +759,7 @@ class ServiceGoNoroot : Service() {
             KailLog.e(this, "ServiceGoNoroot", "addTestProviderNetwork error: ${e.message}")
             if (e.message?.contains("not allowed to perform MOCK_LOCATION") == true) {
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(this, "请在开发者选项中设置此应用为模拟位置应用", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.service_set_mock_app), Toast.LENGTH_LONG).show()
                 }
             }
         }

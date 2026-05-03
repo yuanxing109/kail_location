@@ -8,6 +8,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.kail.location.R
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Spacer
@@ -30,18 +32,18 @@ fun UpdateDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("发现新版本: ${info.version}") },
+        title = { Text(stringResource(R.string.update_title)) },
         text = {
              Text(info.content)
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("下载")
+                Text(stringResource(R.string.update_download))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.common_cancel))
             }
         }
     )
@@ -66,7 +68,7 @@ fun UpdateDownloadDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("发现新版本: ${info.version}") },
+        title = { Text(stringResource(R.string.update_title)) },
         text = {
             Column {
                 Text(info.content)
@@ -78,7 +80,7 @@ fun UpdateDownloadDialog(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("下载中… $progress%")
+                    Text(stringResource(R.string.download_progress, progress))
                 }
             }
         },
@@ -86,12 +88,12 @@ fun UpdateDownloadDialog(
             TextButton(onClick = {
                 if (!downloading) onStartDownload()
             }) {
-                Text(if (downloading) "正在下载" else "下载")
+                Text(if (downloading) stringResource(R.string.update_downloading) else stringResource(R.string.update_download))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.common_cancel))
             }
         }
     )

@@ -167,7 +167,7 @@ fun SpeedSettingsPanel(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "摇杆速度: ${String.format("%.1f", speedKmh)} km/h",
+                    text = stringResource(R.string.joystick_speed, String.format("%.1f", speedKmh)),
                     color = Color.White,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold

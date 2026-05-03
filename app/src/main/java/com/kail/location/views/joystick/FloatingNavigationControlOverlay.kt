@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -173,7 +174,7 @@ fun FloatingNavigationControlOverlay(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "当前进度(道路): $totalDistance",
+                            text = stringResource(R.string.joystick_route_progress, totalDistance),
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -191,7 +192,7 @@ fun FloatingNavigationControlOverlay(
 
                     // Progress Slider
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("进度:", color = Color.White, fontSize = 12.sp, modifier = Modifier.width(40.dp))
+                        Text(stringResource(R.string.joystick_progress), color = Color.White, fontSize = 12.sp, modifier = Modifier.width(40.dp))
                         Slider(
                             value = progress,
                             onValueChange = { onSeek(it) },
@@ -210,7 +211,7 @@ fun FloatingNavigationControlOverlay(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("速度:", color = Color.White, fontSize = 12.sp)
+                        Text(stringResource(R.string.joystick_speed_label), color = Color.White, fontSize = 12.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(onClick = { currentSpeed = (currentSpeed - 5).coerceAtLeast(0.0); onSpeedChange(currentSpeed) }) {
                                 Icon(painterResource(R.drawable.ic_left), contentDescription = "Decrease", tint = Color.White)
@@ -231,7 +232,7 @@ fun FloatingNavigationControlOverlay(
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                             modifier = Modifier.height(28.dp)
                         ) {
-                            Text("修改", color = Color.White, fontSize = 10.sp)
+                            Text(stringResource(R.string.joystick_modify), color = Color.White, fontSize = 10.sp)
                         }
                     }
                 }

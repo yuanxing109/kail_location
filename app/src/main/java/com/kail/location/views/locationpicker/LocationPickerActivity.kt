@@ -295,18 +295,18 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
                                     val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    Toast.makeText(this, "无法打开开发者选项", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, getString(R.string.app_error_dev), Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_contact -> {
                                 try {
                                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                                         data = android.net.Uri.parse("mailto:kailkali23143@gmail.com")
-                                        putExtra(Intent.EXTRA_SUBJECT, "联系作者")
+                                        putExtra(Intent.EXTRA_SUBJECT, getString(R.string.nav_menu_contact))
                                     }
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    Toast.makeText(this, "无法打开邮件应用", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, getString(R.string.error_cannot_open_email), Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_source_code -> {
@@ -314,7 +314,7 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
                                 val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/noellegazelle6/kail_location"))
                                 startActivity(intent)
                             } catch (e: Exception) {
-                                Toast.makeText(this, "无法打开浏览器", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, getString(R.string.error_cannot_open_browser), Toast.LENGTH_SHORT).show()
                             }
                         }
                         }
@@ -646,7 +646,7 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1001)
-                GoUtils.DisplayToast(this, "需要位置权限才能启动服务")
+                GoUtils.DisplayToast(this, getString(R.string.vm_need_location_permission))
                 return
             }
         }
@@ -654,7 +654,7 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
         if (runMode != LocationPickerViewModel.RUN_MODE_ROOT) {
             if (!GoUtils.isAllowMockLocation(this)) {
                 KailLog.i(this, "LocationPickerActivity", "Mock location permission NOT granted")
-                GoUtils.DisplayToast(this, "请在开发者选项中开启模拟位置权限！")
+                GoUtils.DisplayToast(this, getString(R.string.service_set_mock_app))
                 return
             }
 
@@ -662,7 +662,7 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
             val isGpsEnable = lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
             if (!isGpsEnable) {
                 KailLog.i(this, "LocationPickerActivity", "GPS NOT enabled")
-                GoUtils.DisplayToast(this, "请打开GPS")
+                GoUtils.DisplayToast(this, getString(R.string.app_error_gps))
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
                 return
@@ -739,7 +739,7 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
             override fun onFailure(call: Call, e: IOException) {
                 if (!isAuto) {
                     runOnUiThread {
-                        GoUtils.DisplayToast(this@LocationPickerActivity, "检查更新失败！")
+                        GoUtils.DisplayToast(this@LocationPickerActivity, getString(R.string.vm_update_failed, ""))
                     }
                 }
             }
@@ -783,7 +783,7 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
                         } else {
                             if (!isAuto) {
                                 runOnUiThread {
-                                    GoUtils.DisplayToast(this@LocationPickerActivity, "当前已是最新版本！")
+                                    GoUtils.DisplayToast(this@LocationPickerActivity, getString(R.string.vm_up_to_date))
                                 }
                             }
                         }

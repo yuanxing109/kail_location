@@ -227,7 +227,7 @@ fun LocationSimulationScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("步频模拟", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                                    Text(stringResource(R.string.route_sim_step_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                                     Switch(
                                         checked = stepSimulationEnabled,
                                         onCheckedChange = onStepSimulationToggle,
@@ -248,7 +248,7 @@ fun LocationSimulationScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text("步频", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text(stringResource(R.string.route_sim_cadence_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                                         Text("${stepCadenceSpm.toInt()} 步/分钟 · 约 ${((kmh * 10).toInt() / 10f)} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                                     }
                                     Slider(
@@ -380,10 +380,10 @@ fun LocationSimulationScreen(
                 OutlinedTextField(value = renameText, onValueChange = { renameText = it })
             },
             confirmButton = {
-                TextButton(onClick = { onRecordRename(renameTarget!!.id, renameText); renameTarget = null }) { Text("确定") }
+                TextButton(onClick = { onRecordRename(renameTarget!!.id, renameText); renameTarget = null }) { Text(stringResource(R.string.common_ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { renameTarget = null }) { Text("取消") }
+                TextButton(onClick = { renameTarget = null }) { Text(stringResource(R.string.common_cancel)) }
             }
         )
     }

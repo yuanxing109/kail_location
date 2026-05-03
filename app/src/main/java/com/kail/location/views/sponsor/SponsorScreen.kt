@@ -71,7 +71,7 @@ fun SponsorScreen(viewModel: SponsorViewModel, onBackClick: () -> Unit) {
                 clipboard?.setPrimaryClip(ClipData.newPlainText("TRON Address", address))
                 copied.value = true
             }) {
-                Text(text = if (copied.value) "已复制" else "复制地址")
+                Text(text = if (copied.value) stringResource(R.string.sponsor_copied) else stringResource(R.string.sponsor_copy_address))
             }
         }
     }

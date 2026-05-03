@@ -170,8 +170,8 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
                     item[HistoryActivity.KEY_ID] = id.toString()
                     item[HistoryActivity.KEY_LOCATION] = location
                     item[HistoryActivity.KEY_TIME] = GoUtils.timeStamp2Date(timestamp.toString())
-                    item[HistoryActivity.KEY_LNG_LAT_WGS] = "[经度:$doubleLng 纬度:$doubleLat]"
-                    item[HistoryActivity.KEY_LNG_LAT_CUSTOM] = "[经度:$doubleBdLng 纬度:$doubleBdLat]"
+                    item[HistoryActivity.KEY_LNG_LAT_WGS] = String.format(getApplication<Application>().getString(R.string.history_vm_coord_wgs84), doubleLng, doubleLat)
+                    item[HistoryActivity.KEY_LNG_LAT_CUSTOM] = String.format(getApplication<Application>().getString(R.string.history_vm_coord_bd09), doubleBdLng, doubleBdLat)
                     records.add(item)
                 }
                 cursor.close()

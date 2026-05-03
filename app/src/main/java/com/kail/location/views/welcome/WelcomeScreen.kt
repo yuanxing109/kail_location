@@ -75,12 +75,12 @@ fun WelcomeScreen(
                 )
 
                 val agreementText = stringResource(id = R.string.app_agreement_privacy)
-                val agreementPart = "《用户协议》"
-                val privacyPart = "《隐私政策》"
+                val agreementPart = stringResource(id = R.string.welcome_agreement_text)
+                val privacyPart = stringResource(id = R.string.welcome_privacy_text)
 
                 val annotatedString = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Color.White)) {
-                        append("已阅读")
+                        append(stringResource(R.string.welcome_read))
                     }
                     
                     withLink(LinkAnnotation.Clickable("agreement") { onAgreementClick() }) {
@@ -90,7 +90,7 @@ fun WelcomeScreen(
                     }
 
                     withStyle(style = SpanStyle(color = Color.White)) {
-                        append("和")
+                        append(stringResource(R.string.welcome_and))
                     }
 
                     withLink(LinkAnnotation.Clickable("privacy") { onPrivacyClick() }) {

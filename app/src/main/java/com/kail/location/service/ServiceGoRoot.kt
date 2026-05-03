@@ -151,7 +151,7 @@ class ServiceGoRoot : Service() {
         try {
             KailLog.i(this, "ServiceGoRoot", "4. initJoyStick")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                GoUtils.DisplayToast(applicationContext, "请授予悬浮窗权限")
+                GoUtils.DisplayToast(applicationContext, getString(R.string.service_grant_overlay))
             }
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
             val joystickEnabledPref = prefs.getBoolean("setting_joystick_enabled", false)
@@ -165,7 +165,7 @@ class ServiceGoRoot : Service() {
             }
         } catch (e: Throwable) {
             KailLog.e(this, "ServiceGoRoot", "Error initializing JoyStick: ${e.message}")
-            GoUtils.DisplayToast(applicationContext, "悬浮窗初始化失败: ${e.message}")
+            GoUtils.DisplayToast(applicationContext, getString(R.string.service_overlay_failed, e.message))
         }
 
         broadcastStatus()
@@ -395,7 +395,7 @@ class ServiceGoRoot : Service() {
                                 mJoystickManager.show()
                             }
                         } else {
-                            GoUtils.DisplayToast(applicationContext, "请授予悬浮窗权限")
+                            GoUtils.DisplayToast(applicationContext, getString(R.string.service_grant_overlay))
                         }
                     } else {
                         mJoystickManager.hide()

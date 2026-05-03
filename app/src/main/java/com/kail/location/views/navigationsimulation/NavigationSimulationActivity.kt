@@ -59,18 +59,18 @@ class NavigationSimulationActivity : BaseActivity() {
                                     val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    android.widget.Toast.makeText(this, "无法打开开发者选项", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(this, getString(R.string.app_error_dev), android.widget.Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_contact -> {
                                 try {
                                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                                         data = android.net.Uri.parse("mailto:kailkali23143@gmail.com")
-                                        putExtra(Intent.EXTRA_SUBJECT, "联系作者")
+                                        putExtra(Intent.EXTRA_SUBJECT, getString(R.string.nav_menu_contact))
                                     }
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    android.widget.Toast.makeText(this, "无法打开邮件应用", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(this, getString(R.string.error_cannot_open_email), android.widget.Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_source_code -> {
@@ -78,14 +78,14 @@ class NavigationSimulationActivity : BaseActivity() {
                                     val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/noellegazelle6/kail_location"))
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    android.widget.Toast.makeText(this, "无法打开浏览器", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(this, getString(R.string.error_cannot_open_browser), android.widget.Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_update -> {
                                 viewModel.checkUpdate(this)
                             }
                             else -> {
-                                android.widget.Toast.makeText(this, "功能开发中...", android.widget.Toast.LENGTH_SHORT).show()
+                                android.widget.Toast.makeText(this, getString(R.string.error_under_development), android.widget.Toast.LENGTH_SHORT).show()
                             }
                         }
                     },

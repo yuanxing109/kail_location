@@ -114,7 +114,7 @@ fun LocationPickerScreen(
                         onSearch = { onSearch(it) },
                         active = true,
                         onActiveChange = { isSearchActive = it },
-                        placeholder = { Text("搜索地点") },
+                        placeholder = { Text(stringResource(R.string.route_plan_search_hint)) },
                         leadingIcon = {
                             IconButton(onClick = { 
                                 isSearchActive = false
@@ -248,7 +248,7 @@ fun LocationPickerScreen(
     if (showMapTypeDialog) {
         AlertDialog(
             onDismissRequest = { showMapTypeDialog = false },
-            title = { Text("选择地图类型") },
+            title = { Text(stringResource(R.string.route_plan_map_type)) },
             text = {
                 Column {
                     Row(
@@ -262,7 +262,7 @@ fun LocationPickerScreen(
                             onMapTypeChange(BaiduMap.MAP_TYPE_NORMAL)
                             showMapTypeDialog = false 
                         })
-                        Text("普通地图")
+                        Text(stringResource(R.string.route_plan_normal))
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -275,13 +275,13 @@ fun LocationPickerScreen(
                             onMapTypeChange(BaiduMap.MAP_TYPE_SATELLITE)
                             showMapTypeDialog = false 
                         })
-                        Text("卫星地图")
+                        Text(stringResource(R.string.route_plan_satellite))
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showMapTypeDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.route_plan_cancel))
                 }
             }
         )
@@ -309,18 +309,18 @@ fun UpdateDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("发现新版本: ${info.version}") },
+        title = { Text("发现新版本: ${info.version}") },  // TODO: use string resource if available
         text = {
              Text(info.content)
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("下载")
+                Text(stringResource(R.string.update_download))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.route_plan_cancel))
             }
         }
     )
@@ -354,26 +354,26 @@ fun LocationInputDialog(onDismiss: () -> Unit, onConfirm: (Double, Double, Boole
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("输入坐标") },
+        title = { Text(stringResource(R.string.route_plan_coord_title)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = latStr,
                     onValueChange = { latStr = it },
-                    label = { Text("纬度") },
+                    label = { Text(stringResource(R.string.route_plan_latitude)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = lngStr,
                     onValueChange = { lngStr = it },
-                    label = { Text("经度") },
+                    label = { Text(stringResource(R.string.route_plan_longitude)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = isBd09, onCheckedChange = { isBd09 = it })
-                    Text("BD09坐标 (默认WGS84)")
+                    Text(stringResource(R.string.route_plan_coord_type))
                 }
             }
         },
@@ -385,12 +385,12 @@ fun LocationInputDialog(onDismiss: () -> Unit, onConfirm: (Double, Double, Boole
                     onConfirm(lat, lng, isBd09)
                 }
             }) {
-                Text("确定")
+                Text(stringResource(R.string.route_plan_ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("取消")
+                Text(stringResource(R.string.route_plan_cancel))
             }
         }
     )

@@ -27,6 +27,7 @@ import com.baidu.mapapi.search.geocode.GeoCoder
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption
 import androidx.core.content.ContextCompat
+import com.kail.location.R
 import com.kail.location.service.ServiceGoRoot
 import com.kail.location.service.ServiceGoNoroot
 
@@ -134,7 +135,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         }
         suggestionSearch.requestSuggestion(
             SuggestionSearchOption()
-                .city(city ?: "全国")
+                .city(city ?: getApplication<Application>().getString(R.string.vm_search_city))
                 .keyword(keyword)
         )
     }
@@ -176,9 +177,9 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
                 if (!isAuto) {
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         if (error != null) {
-                            Toast.makeText(context, "检查更新失败: $error", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_update_failed, error), Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "当前已是最新版本", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_up_to_date), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -266,7 +267,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         // 检查步频模拟权限
         if (settings.value.stepFreqSimulation) {
             if (currentRunMode != "root") {
-                _toastMessage.value = "步频模拟需要 ROOT 模式"
+                _toastMessage.value = getApplication<Application>().getString(R.string.vm_step_root_required)
                 return false
             }
         }
@@ -293,7 +294,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         if (ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             ContextCompat.startForegroundService(app, intent)
         } else {
-            GoUtils.DisplayToast(app, "需要位置权限才能启动模拟")
+            GoUtils.DisplayToast(app, app.getString(R.string.vm_need_location_permission))
             return false
         }
         _isSimulating.value = true
@@ -623,16 +624,17 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
             coder.setOnGetGeoCodeResultListener(object : OnGetGeoCoderResultListener {
                 override fun onGetGeoCodeResult(geoCodeResult: com.baidu.mapapi.search.geocode.GeoCodeResult?) {}
                 override fun onGetReverseGeoCodeResult(result: com.baidu.mapapi.search.geocode.ReverseGeoCodeResult?) {
+                    val unknownLocation = getApplication<Application>().getString(R.string.vm_unknown_location)
                     val name = if (result != null && result.error == SearchResult.ERRORNO.NO_ERROR) {
-                        result.address ?: "未知地点"
-                    } else "未知地点"
+                        result.address ?: unknownLocation
+                    } else unknownLocation
                     onResult(name)
                     coder.destroy()
                 }
             })
             coder.reverseGeoCode(ReverseGeoCodeOption().location(com.baidu.mapapi.model.LatLng(lat, lng)))
         } catch (_: Exception) {
-            onResult("未知地点")
+            onResult(getApplication<Application>().getString(R.string.vm_unknown_location))
         }
     }
 }

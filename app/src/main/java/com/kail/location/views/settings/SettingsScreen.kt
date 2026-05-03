@@ -104,56 +104,56 @@ fun SettingsScreen(
             )
 
             EditTextPreference(
-                title = "步行速度 (m/s)",
+                title = stringResource(R.string.setting_walk),
                 value = walkSpeed,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_WALK_SPEED, it) }
             )
 
             EditTextPreference(
-                title = "跑步速度 (m/s)",
+                title = stringResource(R.string.setting_run),
                 value = runSpeed,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_RUN_SPEED, it) }
             )
 
             EditTextPreference(
-                title = "骑行速度 (m/s)",
+                title = stringResource(R.string.setting_bike),
                 value = bikeSpeed,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_BIKE_SPEED, it) }
             )
 
             // ===== Group: 位置模拟参数 =====
-            PreferenceCategory(title = "位置模拟参数")
+            PreferenceCategory(title = stringResource(R.string.setting_group_move))
 
             EditTextPreference(
-                title = "海拔高度 (米)",
+                title = stringResource(R.string.setting_altitude),
                 value = altitude,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_ALTITUDE, it) }
             )
 
             EditTextPreference(
-                title = "模拟移动速度 (m/s)",
+                title = stringResource(R.string.setting_mock_speed),
                 value = mockSpeed,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_MOCK_SPEED, it) }
             )
 
             EditTextPreference(
-                title = "定位抖动范围 (米)",
+                title = stringResource(R.string.setting_accuracy_title),
                 value = accuracy,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_ACCURACY, it) }
             )
 
             EditTextPreference(
-                title = "最少模拟卫星数量",
+                title = stringResource(R.string.setting_min_satellites),
                 value = minSatellites,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_MIN_SATELLITES, it) },
-                description = "仅支持北斗卫星"
+                description = stringResource(R.string.setting_min_satellites_summary)
             )
 
             EditTextPreference(
-                title = "上报位置频率 (ms)",
+                title = stringResource(R.string.setting_report_interval),
                 value = reportInterval,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_REPORT_INTERVAL, it) },
-                description = "单位毫秒，默认 100ms"
+                description = stringResource(R.string.setting_report_interval_summary)
             )
 
             // ===== Group: 位置偏移 =====
@@ -167,52 +167,52 @@ fun SettingsScreen(
             )
 
             EditTextPreference(
-                title = "纬度最大偏移 (米)",
+                title = stringResource(R.string.setting_lat_max_offset),
                 value = latOffset,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_LAT_OFFSET, it) }
             )
 
             EditTextPreference(
-                title = "经度最大偏移 (米)",
+                title = stringResource(R.string.setting_lon_max_offset),
                 value = lonOffset,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_LON_OFFSET, it) }
             )
 
             // ===== Group: 卫星与信号 =====
-            PreferenceCategory(title = "卫星与信号模拟")
+            PreferenceCategory(title = stringResource(R.string.setting_group_satellite_and_signal))
 
             SwitchPreference(
-                title = "模拟 GPS 卫星信号",
+                title = stringResource(R.string.setting_gps_satellite_title),
                 checked = gpsSatelliteSim,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_GPS_SATELLITE_SIM, it) },
-                summary = "伪造北斗卫星数量和信号强度"
+                summary = stringResource(R.string.setting_gps_satellite_summary)
             )
 
             SwitchPreference(
-                title = "启用 AGPS 模块",
+                title = stringResource(R.string.setting_agps_title),
                 checked = enableAGPS,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_ENABLE_AGPS, it) },
-                summary = "辅助定位相关（实验性）"
+                summary = stringResource(R.string.setting_agps_summary)
             )
 
             SwitchPreference(
-                title = "启用 NMEA 模块",
+                title = stringResource(R.string.setting_nmea_title),
                 checked = enableNMEA,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_ENABLE_NMEA, it) },
-                summary = "伪造 NMEA 数据输出"
+                summary = stringResource(R.string.setting_nmea_summary)
             )
 
             SwitchPreference(
-                title = "模拟 WLAN 数据",
+                title = stringResource(R.string.setting_wlan_title),
                 checked = enableMockWifi,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_ENABLE_MOCK_WIFI, it) },
-                summary = "伪造 WiFi 定位数据"
+                summary = stringResource(R.string.setting_wlan_summary)
             )
 
             ListPreference(
-                title = "传感器模拟方案",
+                title = stringResource(R.string.setting_sim_scheme),
                 currentValue = simScheme,
-                entries = arrayOf("傅里叶级数 (Fourier)", "正弦+随机扰动 (Sine+Noise)"),
+                entries = arrayOf(stringResource(R.string.setting_sim_fourier), stringResource(R.string.setting_sim_sine_noise)),
                 entryValues = arrayOf("0", "1"),
                 onValueChange = {
                     viewModel.updateStringPreference(SettingsViewModel.KEY_SIM_SCHEME, it)
@@ -221,115 +221,115 @@ fun SettingsScreen(
             )
 
             SwitchPreference(
-                title = "计步器模拟",
+                title = stringResource(R.string.setting_step_sim),
                 checked = stepSimEnabled,
                 onCheckedChange = {
                     viewModel.updateBooleanPreference(SettingsViewModel.KEY_STEP_SIM_ENABLED, it)
                     FakeLocState.setStepSimEnabled(it)
                 },
-                summary = "控制步数检测器(18)与计步器(19)事件的模拟"
+                summary = stringResource(R.string.setting_step_sim_summary)
             )
 
             // ===== Group: 拦截控制 =====
-            PreferenceCategory(title = "拦截与降级控制")
+            PreferenceCategory(title = stringResource(R.string.setting_group_intercept))
 
             SwitchPreference(
-                title = "允许 GetCurrentLocation",
+                title = stringResource(R.string.setting_allow_get_current),
                 checked = allowGetCurrentLocation,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_ALLOW_GET_CURRENT_LOCATION, it) },
-                summary = "关闭则拦截 getCurrentLocation 请求"
+                summary = stringResource(R.string.setting_allow_get_current_summary)
             )
 
             SwitchPreference(
-                title = "允许注册位置监听器",
+                title = stringResource(R.string.setting_allow_register_listener),
                 checked = allowRegisterListener,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_ALLOW_REGISTER_LISTENER, it) },
-                summary = "关闭则拦截 registerLocationListener"
+                summary = stringResource(R.string.setting_allow_register_listener_summary)
             )
 
             SwitchPreference(
-                title = "允许地理围栏请求",
+                title = stringResource(R.string.setting_allow_geofence),
                 checked = allowGeofence,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_ALLOW_GEOFENCE, it) },
-                summary = "关闭则拦截 addGeofence"
+                summary = stringResource(R.string.setting_allow_geofence_summary)
             )
 
             SwitchPreference(
-                title = "允许位置获取",
+                title = stringResource(R.string.setting_allow_get_location),
                 checked = allowGetFromLocation,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_ALLOW_GET_FROM_LOCATION, it) },
-                summary = "关闭则拦截 getFromLocation 等反查"
+                summary = stringResource(R.string.setting_allow_get_location_summary)
             )
 
             SwitchPreference(
-                title = "禁用融合定位",
+                title = stringResource(R.string.setting_disable_fused),
                 checked = disableFusedLocation,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_DISABLE_FUSED_LOCATION, it) },
-                summary = "阻止应用使用 fused provider"
+                summary = stringResource(R.string.setting_disable_fused_summary)
             )
 
             SwitchPreference(
-                title = "网络定位降级为 CDMA",
+                title = stringResource(R.string.setting_downgrade_cdma),
                 checked = downgradeToCdma,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_DOWNGRADE_TO_CDMA, it) },
-                summary = "将网络定位结果伪装为基站定位"
+                summary = stringResource(R.string.setting_downgrade_cdma_summary)
             )
 
             SwitchPreference(
-                title = "禁用扫描 WiFi 列表",
+                title = stringResource(R.string.setting_disable_wifi_scan),
                 checked = disableWifiScan,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_DISABLE_WIFI_SCAN, it) },
-                summary = "阻止应用获取真实 WiFi 扫描结果"
+                summary = stringResource(R.string.setting_disable_wifi_scan_summary)
             )
 
             // ===== Group: 反检测 =====
-            PreferenceCategory(title = "反检测与防拉回")
+            PreferenceCategory(title = stringResource(R.string.setting_group_anti_detect))
 
             SwitchPreference(
-                title = "隐藏模拟位置",
+                title = stringResource(R.string.setting_hide_mock),
                 checked = hideMock,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_HIDE_MOCK, it) },
-                summary = "移除 Location.isFromMockProvider 标记"
+                summary = stringResource(R.string.setting_hide_mock_summary)
             )
 
             SwitchPreference(
-                title = "反定位拉回",
+                title = stringResource(R.string.setting_anti_pullback),
                 checked = loopBroadcast,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_LOOP_BROADCAST, it) },
-                summary = "持续广播位置，一定程度解决被系统拉回"
+                summary = stringResource(R.string.setting_anti_pullback_summary)
             )
 
             // ===== Group: 日志/其他 =====
-            PreferenceCategory(title = "其他")
+            PreferenceCategory(title = stringResource(R.string.setting_group_other))
 
             EditTextPreference(
-                title = "百度地图 Key (需重启生效)",
+                title = stringResource(R.string.setting_baidu_key),
                 value = baiduMapKey,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_BAIDU_MAP_KEY, it) }
             )
 
             SwitchPreference(
-                title = "启用日志",
+                title = stringResource(R.string.setting_enable_log),
                 checked = logEnabled,
                 onCheckedChange = { viewModel.updateBooleanPreference(SettingsViewModel.KEY_LOG_ENABLED, it) },
-                summary = "控制控制台输出与本地文件保存"
+                summary = stringResource(R.string.setting_enable_log_summary)
             )
 
             EditTextPreference(
-                title = "历史记录有效期 (天)",
+                title = stringResource(R.string.setting_history_expiration),
                 value = historyExpiration,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_HISTORY_EXPIRATION, it) }
             )
 
             EditTextPreference(
-                title = "悬浮窗地图缩放比例",
+                title = stringResource(R.string.setting_map_zoom),
                 value = mapZoom,
                 onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_MAP_ZOOM, it) },
-                description = "范围 10-21，数值越大地图越详细"
+                description = stringResource(R.string.setting_map_zoom_summary)
             )
 
             ListItem(
-                headlineContent = { Text("当前版本") },
+                headlineContent = { Text(stringResource(R.string.setting_current_version)) },
                 supportingContent = { Text(viewModel.appVersion) }
             )
         }
@@ -388,7 +388,7 @@ fun EditTextPreference(
         headlineContent = { Text(title) },
         supportingContent = {
             Column {
-                Text(value.ifEmpty { "未设置" })
+                Text(value.ifEmpty { stringResource(R.string.setting_not_set) })
                 if (description.isNotEmpty()) {
                     Text(description, style = MaterialTheme.typography.bodySmall)
                 }
@@ -425,12 +425,12 @@ fun EditTextPreference(
                         showDialog = false
                     }
                 ) {
-                    Text("确定")
+                    Text(stringResource(R.string.setting_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.setting_cancel))
                 }
             }
         )
@@ -488,7 +488,7 @@ fun ListPreference(
             },
             confirmButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.setting_cancel))
                 }
             }
         )

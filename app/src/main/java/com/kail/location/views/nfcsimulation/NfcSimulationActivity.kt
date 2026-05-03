@@ -81,24 +81,24 @@ class NfcSimulationActivity : BaseActivity() {
                     try {
                         startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS))
                     } catch (e: Exception) {
-                        Toast.makeText(this, "无法打开开发者选项", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.app_error_dev), Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.nav_contact -> {
                     try {
                         startActivity(Intent(Intent.ACTION_SENDTO).apply {
                             data = android.net.Uri.parse("mailto:kailkali23143@gmail.com")
-                            putExtra(Intent.EXTRA_SUBJECT, "联系作者")
+                            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.nav_menu_contact))
                         })
                     } catch (e: Exception) {
-                        Toast.makeText(this, "无法打开邮件应用", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.error_cannot_open_email), Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.nav_source_code -> {
                     try {
                         startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/noellegazelle6/kail_location")))
                     } catch (e: Exception) {
-                        Toast.makeText(this, "无法打开浏览器", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.error_cannot_open_browser), Toast.LENGTH_SHORT).show()
                     }
                 }
                 else -> {
@@ -119,7 +119,7 @@ class NfcSimulationActivity : BaseActivity() {
         
         nfcAdapter?.let { adapter ->
             if (!adapter.isEnabled) {
-                Toast.makeText(this, "请先开启NFC", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.nfc_sim_need_nfc), Toast.LENGTH_SHORT).show()
             } else {
                 val intentFilters = arrayOf(
                     IntentFilter("android.nfc.action.TAG_DISCOVERED").apply {

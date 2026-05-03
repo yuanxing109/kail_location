@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
 import androidx.core.content.ContextCompat
+import com.kail.location.R
 import com.kail.location.service.ServiceGoRoot
 import com.kail.location.service.ServiceGoNoroot
 import com.kail.location.views.locationpicker.LocationPickerActivity
@@ -163,7 +164,7 @@ class LocationSimulationViewModel(application: Application) : AndroidViewModel(a
             if (ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 ContextCompat.startForegroundService(app, intent)
             } else {
-                GoUtils.DisplayToast(app, "需要位置权限才能启动模拟")
+                GoUtils.DisplayToast(app, app.getString(R.string.vm_need_location_permission))
                 return
             }
             _isSimulating.value = true
@@ -212,9 +213,9 @@ class LocationSimulationViewModel(application: Application) : AndroidViewModel(a
                     // Use MainExecutor to show toast
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         if (error != null) {
-                            Toast.makeText(context, "检查更新失败: $error", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_update_failed, error), Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "当前已是最新版本", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_up_to_date), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

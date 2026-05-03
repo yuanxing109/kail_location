@@ -117,14 +117,14 @@ fun NavigationSimulationScreen(
     if (showSpeedDialog) {
         AlertDialog(
             onDismissRequest = { showSpeedDialog = false },
-            title = { Text("设置速度 (km/h)") },
+            title = { Text(stringResource(R.string.nav_sim_speed_dialog_title)) },
             text = {
                 OutlinedTextField(
                     value = speedStr,
                     onValueChange = { if (it.all { char -> char.isDigit() || char == '.' }) speedStr = it },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    label = { Text("速度") }
+                    label = { Text(stringResource(R.string.nav_sim_speed)) }
                 )
             },
             confirmButton = {
@@ -133,12 +133,12 @@ fun NavigationSimulationScreen(
                     viewModel.setSpeed(speed)
                     showSpeedDialog = false 
                 }) {
-                    Text("确定")
+                    Text(stringResource(R.string.nav_sim_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showSpeedDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.nav_sim_cancel))
                 }
             }
         )
@@ -161,7 +161,7 @@ fun NavigationSimulationScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("模拟导航", color = Color.White) },
+                    title = { Text(stringResource(R.string.nav_sim_title), color = Color.White) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
@@ -199,7 +199,7 @@ fun NavigationSimulationScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "起点:",
+                                    text = stringResource(R.string.nav_sim_start_point),
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.width(60.dp)
@@ -210,7 +210,7 @@ fun NavigationSimulationScreen(
                                         .clickable { pickStart() }
                                 ) {
                                     Text(
-                                        text = if (startPoint.isEmpty()) "请选择起点" else startPoint,
+                                        text = if (startPoint.isEmpty()) stringResource(R.string.nav_sim_select_start) else startPoint,
                                         color = if (startPoint.isEmpty()) Color.Gray else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -229,7 +229,7 @@ fun NavigationSimulationScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "终点:",
+                                    text = stringResource(R.string.nav_sim_end_point),
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.width(60.dp)
@@ -240,7 +240,7 @@ fun NavigationSimulationScreen(
                                         .clickable { pickEnd() }
                                 ) {
                                     Text(
-                                        text = if (endPoint.isEmpty()) "请选择终点" else endPoint,
+                                        text = if (endPoint.isEmpty()) stringResource(R.string.nav_sim_select_end) else endPoint,
                                         color = if (endPoint.isEmpty()) Color.Gray else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
@@ -275,9 +275,9 @@ fun NavigationSimulationScreen(
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text("规划中...", color = MaterialTheme.colorScheme.onPrimary)
+                                        Text(stringResource(R.string.nav_sim_planning), color = MaterialTheme.colorScheme.onPrimary)
                                     } else {
-                                        Text("开始模拟", color = MaterialTheme.colorScheme.onPrimary)
+                                        Text(stringResource(R.string.nav_sim_start), color = MaterialTheme.colorScheme.onPrimary)
                                     }
                                 }
                             } else {
@@ -290,7 +290,7 @@ fun NavigationSimulationScreen(
                                         ),
                                         shape = RoundedCornerShape(24.dp),
                                         modifier = Modifier.weight(1f)
-                                    ) { Text(if (isPaused) "继续模拟" else "暂停模拟") }
+                                    ) { Text(if (isPaused) stringResource(R.string.nav_sim_resume) else stringResource(R.string.nav_sim_pause)) }
                                     Button(
                                         onClick = { viewModel.stopSimulation() },
                                         colors = ButtonDefaults.buttonColors(
@@ -299,7 +299,7 @@ fun NavigationSimulationScreen(
                                         ),
                                         shape = RoundedCornerShape(24.dp),
                                         modifier = Modifier.weight(1f)
-                                    ) { Text("结束模拟") }
+                                    ) { Text(stringResource(R.string.nav_sim_stop)) }
                                 }
                             }
                                 
@@ -310,7 +310,7 @@ fun NavigationSimulationScreen(
                                         checked = isMultiRoute,
                                         onCheckedChange = { viewModel.setMultiRoute(it) }
                                     )
-                                    Text("多路线", fontSize = 14.sp)
+                                    Text(stringResource(R.string.nav_sim_multi_route), fontSize = 14.sp)
                                 }
                                 
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -330,7 +330,7 @@ fun NavigationSimulationScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "历史数据 (最多显示10条)",
+                            text = stringResource(R.string.nav_sim_history_title),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
@@ -340,7 +340,7 @@ fun NavigationSimulationScreen(
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                             modifier = Modifier.height(32.dp)
                         ) {
-                            Text("清空", fontSize = 12.sp, color = Color.Red)
+                            Text(stringResource(R.string.nav_sim_clear), fontSize = 12.sp, color = Color.Red)
                         }
                     }
 
@@ -429,7 +429,7 @@ fun NavigationSimulationScreen(
                                 Button(
                                     onClick = { selectedIndex = (selectedIndex + 1) % candidateRoutes.size },
                                     shape = RoundedCornerShape(24.dp)
-                                ) { Text("切换路线") }
+                                ) { Text(stringResource(R.string.nav_sim_switch_route)) }
                                 Button(
                                     onClick = { viewModel.chooseCandidate(selectedIndex) },
                                     shape = RoundedCornerShape(24.dp),
@@ -437,7 +437,7 @@ fun NavigationSimulationScreen(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
                                     )
-                                ) { Text("选择路线") }
+                                ) { Text(stringResource(R.string.nav_sim_choose_route)) }
                             }
                         }
                     }
@@ -448,4 +448,3 @@ fun NavigationSimulationScreen(
         }
     }
 }
- 

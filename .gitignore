@@ -23,7 +23,7 @@ local.properties
 .vs/
 *.iml
 # Release output
-/app/release/
+
 # Build outputs
 app/build/
 app/.cxx/

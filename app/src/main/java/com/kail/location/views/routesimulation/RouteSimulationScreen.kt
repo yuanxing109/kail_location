@@ -231,6 +231,11 @@ fun RouteSimulationScreen(
                                 }
                             }
                         }
+                        item {
+                            com.kail.location.ads.NativeAdCard(
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
                     }
                 }
             }

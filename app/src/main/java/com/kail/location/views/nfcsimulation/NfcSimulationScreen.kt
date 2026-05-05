@@ -404,6 +404,9 @@ fun NfcSimulationScreen(
                         }
                     }
                 }
+                item {
+                    com.kail.location.ads.NativeAdCard()
+                }
             }
         }
     }

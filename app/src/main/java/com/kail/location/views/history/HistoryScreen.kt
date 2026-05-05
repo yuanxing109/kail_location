@@ -122,6 +122,9 @@ fun HistoryScreen(
                         )
                         HorizontalDivider()
                     }
+                    item {
+                        com.kail.location.ads.NativeAdCard()
+                    }
                 }
             }
         }

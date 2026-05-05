@@ -27,6 +27,7 @@ import com.baidu.mapapi.search.geocode.GeoCoder
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption
 import androidx.core.content.ContextCompat
+import com.kail.location.R
 import com.kail.location.service.ServiceGoRoot
 import com.kail.location.service.ServiceGoNoroot
 
@@ -134,7 +135,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         }
         suggestionSearch.requestSuggestion(
             SuggestionSearchOption()
-                .city(city ?: "全国")
+                .city(city ?: getApplication<Application>().getString(R.string.vm_search_city))
                 .keyword(keyword)
         )
     }
@@ -176,9 +177,9 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
                 if (!isAuto) {
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         if (error != null) {
-                            Toast.makeText(context, "检查更新失败: $error", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_update_failed, error), Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "当前已是最新版本", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_up_to_date), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -266,7 +267,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         // 检查步频模拟权限
         if (settings.value.stepFreqSimulation) {
             if (currentRunMode != "root") {
-                _toastMessage.value = "步频模拟需要 ROOT 模式"
+                _toastMessage.value = getApplication<Application>().getString(R.string.vm_step_root_required)
                 return false
             }
         }
@@ -293,7 +294,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
         if (ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             ContextCompat.startForegroundService(app, intent)
         } else {
-            GoUtils.DisplayToast(app, "需要位置权限才能启动模拟")
+            GoUtils.DisplayToast(app, app.getString(R.string.vm_need_location_permission))
             return false
         }
         _isSimulating.value = true
@@ -455,10 +456,10 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
                 
                 val first = points.optJSONObject(0) ?: continue
                 val last = points.optJSONObject(points.length() - 1) ?: continue
-                val s = obj.optString("startName",
-                    String.format("%.6f,%.6f", first.optDouble("lat"), first.optDouble("lng")))
-                val e = obj.optString("endName",
-                    String.format("%.6f,%.6f", last.optDouble("lat"), last.optDouble("lng")))
+                val coordS = String.format("%.6f,%.6f", first.optDouble("lat"), first.optDouble("lng"))
+                val coordE = String.format("%.6f,%.6f", last.optDouble("lat"), last.optDouble("lng"))
+                val s = obj.optString("startName", coordS).let { if (it.isBlank() || it == "null") coordS else it }
+                val e = obj.optString("endName", coordE).let { if (it.isBlank() || it == "null") coordE else it }
                 list.add(time to RouteInfo(time.toString(), s, e, ""))
             }
             list.sortByDescending { it.first }
@@ -599,7 +600,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
             val first = points.optJSONObject(0) ?: return
             val last = points.optJSONObject(points.length() - 1) ?: return
             reverseGeocode(first.optDouble("lat"), first.optDouble("lng")) { name ->
-                obj.put("startName", name)
+                if (name.isNotBlank() && name != "null") obj.put("startName", name)
                 val prefs = PreferenceManager.getDefaultSharedPreferences(getApplication())
                 val res = prefs.getString("saved_routes", "[]") ?: "[]"
                 val arr = JSONArray(res)
@@ -607,7 +608,7 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
                 _historyRoutes.value = parseRoutes(arr.toString())
             }
             reverseGeocode(last.optDouble("lat"), last.optDouble("lng")) { name ->
-                obj.put("endName", name)
+                if (name.isNotBlank() && name != "null") obj.put("endName", name)
                 val prefs = PreferenceManager.getDefaultSharedPreferences(getApplication())
                 val res = prefs.getString("saved_routes", "[]") ?: "[]"
                 val arr = JSONArray(res)
@@ -623,16 +624,17 @@ class RouteSimulationViewModel(application: Application) : AndroidViewModel(appl
             coder.setOnGetGeoCodeResultListener(object : OnGetGeoCoderResultListener {
                 override fun onGetGeoCodeResult(geoCodeResult: com.baidu.mapapi.search.geocode.GeoCodeResult?) {}
                 override fun onGetReverseGeoCodeResult(result: com.baidu.mapapi.search.geocode.ReverseGeoCodeResult?) {
+                    val unknownLocation = getApplication<Application>().getString(R.string.vm_unknown_location)
                     val name = if (result != null && result.error == SearchResult.ERRORNO.NO_ERROR) {
-                        result.address ?: "未知地点"
-                    } else "未知地点"
+                        result.address ?: unknownLocation
+                    } else unknownLocation
                     onResult(name)
                     coder.destroy()
                 }
             })
             coder.reverseGeoCode(ReverseGeoCodeOption().location(com.baidu.mapapi.model.LatLng(lat, lng)))
         } catch (_: Exception) {
-            onResult("未知地点")
+            onResult(getApplication<Application>().getString(R.string.vm_unknown_location))
         }
     }
 }

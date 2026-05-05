@@ -1,0 +1,371 @@
+<resources>
+    <string name="app_name">KailLocation</string>
+    <string name="app_settings">Settings</string>
+    <string name="app_history">History</string>
+    <string name="history_title">History</string>
+    <string name="history_search_hint">Search history</string>
+    <string name="history_no_record">No history records</string>
+    <string name="app_author">kail</string>
+    <string name="app_email">kailkali23143@gmail.com</string>
+    <string name="app_statement">For learning purposes only. Use at your own risk!</string>
+    <string name="app_service_tips">KailLocation service is running</string>
+    <string name="app_agreement">User Agreement</string>
+    <string name="app_agreement_content">"1. This software is designed for learning Android development and does not collect any user data."
+    "It is strictly prohibited to use this software to infringe on others\' privacy or for gaming profit. If users cannot comply with this rule, please delete immediately."
+    "Any adverse consequences caused by users\' use of this software, including privacy leaks, shall be borne by the users themselves. The author assumes no responsibility.\n"
+    "2. Users shall not reverse engineer, decompile, or disassemble this software product. Violators will be held liable for infringement and shall bear the adverse consequences.\n"
+    "3. This software guarantees no viruses, trojans, or other malicious code that damages user data. However, since this software can be downloaded and distributed via the internet, the author cannot guarantee that copies obtained from non-designated sites are free of viruses, trojan horses, or hacker software, and assumes no responsibility for direct or indirect damages.\n"
+    "4. This software will be continuously updated to provide new features and fix bugs. The author guarantees that the upgrade process contains no malicious code intended to damage user computer data.\n"
+    "5. Due to differences and complexity in user computer hardware and software environments, the functions provided by this software are not guaranteed to work properly in all situations or meet user expectations. The author assumes no responsibility for any consequences arising from the use of this software.\n"
+    "6. By installing this software, users indicate their trust in the author and voluntary acceptance of all terms of this agreement. If users do not accept this agreement, please delete immediately.\n"
+    </string>
+    <string name="app_privacy">Privacy Policy</string>
+    <string name="app_privacy_content">"1. This software is designed for learning Android development and does not collect any user data.\n"
+    "2. Users shall not reverse engineer, decompile, or disassemble this software product. Violators will be held liable for infringement and shall bear the adverse consequences.\n"
+    "3. This software guarantees no viruses, trojans, or other malicious code that damages user data. However, since this software can be downloaded and distributed via the internet, the author cannot guarantee that copies obtained from non-designated sites are free of viruses, trojan horses, or hacker software, and assumes no responsibility for direct or indirect damages.\n"
+    "4. This software will be continuously updated to provide new features and fix bugs. The author guarantees that the upgrade process contains no malicious code intended to damage user computer data.\n"
+    "5. Due to differences and complexity in user computer hardware and software environments, the functions provided by this software are not guaranteed to work properly in all situations or meet user expectations. The author assumes no responsibility for any consequences arising from the use of this software.\n"
+    "6. By installing this software, users indicate their trust in the author and voluntary acceptance of all terms of this agreement. If users do not accept this agreement, please delete immediately.\n"
+    </string>
+    <string name="app_agreement_privacy">I have read and agree to the User Agreement and Privacy Policy</string>
+    <string name="app_error_agreement">You must accept the User Agreement and Privacy Policy first</string>
+    <string name="app_error_read">Please read and accept the User Agreement and Privacy Policy</string>
+    <string name="app_error_gps">GPS is not available. Please check if GPS is enabled.</string>
+    <string name="app_error_network">Network unavailable. Please check your connection.</string>
+    <string name="app_error_permission">Insufficient permissions. Please grant the required permissions.</string>
+    <string name="app_error_input">Invalid input. Please check your input.</string>
+    <string name="app_error_input_null">Input cannot be empty. Please enter a value.</string>
+    <string name="app_error_search">Search failed. Please check network or location.</string>
+    <string name="app_error_location">Please select a location first.</string>
+    <string name="app_error_dev">Developer options not enabled. Cannot navigate!</string>
+    <string name="app_error_param">Invalid parameter</string>
+    <string name="app_error_protocol">Please read and accept the user agreement first</string>
+    <string name="app_error_username">Invalid username</string>
+    <string name="app_error_code">Registration code cannot be empty</string>
+    <string name="app_error_longitude">Longitude out of range!\nValue: -180.0 ~ 180.0</string>
+    <string name="app_error_latitude">Latitude out of range!\nValue: -90.0 ~ 90.0</string>
+    <string name="app_search_null">No results found. Please try again.</string>
+    <string name="app_search_tips">Enter search keywords</string>
+    <string name="app_location_ok">Location sent</string>
+    <string name="app_location_copy">Location copied to clipboard</string>
+    <string name="app_location_save">Location saved</string>
+
+    <string name="welcome_btn_txt">Enter App</string>
+    <string name="app_btn_agree">Agree &amp; Continue</string>
+    <string name="app_btn_disagree">Disagree</string>
+
+    <string name="setting_group_move">Movement</string>
+    <string name="setting_joystick_type">Joystick Type</string>
+    <string name="setting_joystick_speed">Joystick Speed (m/s)</string>
+    <string name="setting_joystick_speed_default">1.2</string>
+    <string name="setting_walk">Walk Speed (m/s)</string>
+    <string name="setting_walk_default">1.2</string>
+    <string name="setting_run">Run Speed (m/s)</string>
+    <string name="setting_run_default">3.6</string>
+    <string name="setting_bike">Drive Speed (m/s)</string>
+    <string name="setting_bike_default">10.0</string>
+    <string name="setting_altitude">Altitude (meters)</string>
+    <string name="setting_altitude_default">55.0</string>
+
+    <string name="setting_group_location_offset">Location Offset</string>
+    <string name="setting_random_offset">Random Offset</string>
+    <string name="setting_random_offset_summary">Only effective when using history locations</string>
+    <string name="setting_random_offset_default">10.0</string>
+    <string name="setting_lat_max_offset">Max Longitude Offset (m)</string>
+    <string name="setting_lon_max_offset">Max Latitude Offset (m)</string>
+    <string name="setting_group_log">Log</string>
+    <string name="setting_log_off">Disable Log</string>
+    <string name="setting_history_expiration">History Expiration (days)</string>
+    <string name="setting_group_about">About</string>
+    <string name="setting_version">Version</string>
+    <string name="setting_author">Developer</string>
+
+    <string name="history_expiration">7</string>
+    <string name="history_location_default_name">Map Location</string>
+    <string name="history_idle">No history records</string>
+    <string name="history_delete_ok">Deleted successfully!</string>
+    <string name="history_delete_error">Delete failed</string>
+    <string name="history_error_location">Location failed. Please select manually.</string>
+    <string name="history_error_search">No results found</string>
+
+    <string name="note_show">Show Joystick</string>
+    <string name="note_hide">Hide Joystick</string>
+    <string name="joystick_map_tips">Search or tap map location</string>
+    <string name="joystick_history_tips">Search or tap history location</string>
+    <string name="joystick_history">History</string>
+    <string name="joystick_map">Map</string>
+    <string name="joystick_move">Move</string>
+    <string name="joystick_walk">Walk</string>
+    <string name="joystick_run">Run</string>
+    <string name="joystick_bike">Bike</string>
+    <string name="nav_drawer_open">Open navigation menu</string>
+    <string name="nav_drawer_close">Close navigation menu</string>
+    <string name="nav_menu_history">History</string>
+    <string name="nav_menu_location_simulation">Location Simulation</string>
+    <string name="nav_menu_route_simulation">Route Simulation</string>
+    <string name="loc_sim_title">Location Simulation</string>
+    <string name="loc_sim_target">Target Location</string>
+    <string name="loc_sim_none">NONE</string>
+    <string name="loc_sim_lat_lng">Coordinates: %1$s, %2$s</string>
+    <string name="loc_sim_start">Start Simulation</string>
+    <string name="loc_sim_stop">Stop Simulation</string>
+    <string name="loc_sim_base_station">Base Station</string>
+    <string name="loc_sim_joystick">Joystick</string>
+    <string name="loc_sim_history_title">History Locations</string>
+    <string name="loc_sim_add_tips">Tap the \"+\" button to add</string>
+    <string name="nav_menu_settings">Settings</string>
+    <string name="nav_menu_dev">Developer Options</string>
+    <string name="nav_menu_more">More</string>
+    <string name="nav_menu_upgrade">Check Updates</string>
+    <string name="nav_menu_feedback">Feedback</string>
+    <string name="nav_menu_contact">Contact</string>
+    <string name="nav_app_tips">For learning purposes only. Use at your own risk!</string>
+    <string name="nav_menu_sponsor">Sponsor</string>
+    <string name="nav_menu_github">Source Code</string>
+    <string name="nav_menu_run_mode">Run Mode</string>
+    <string name="run_mode_dialog_title">Select Run Mode</string>
+    <string name="run_mode_root">Root Mode</string>
+    <string name="run_mode_noroot">NoRoot Mode</string>
+    <string name="run_mode_changed">Run mode changed to %s</string>
+    <string name="sponsor_title">Sponsor</string>
+    <string name="sponsor_tron_note">TRON assets only</string>
+
+    <string name="label_longitude">Longitude</string>
+    <string name="label_latitude">Latitude</string>
+    <string name="input_position_ok">Send</string>
+    <string name="input_position_cancel">Cancel</string>
+    <string name="input_position_baidu">BD09 Coordinates</string>
+    <string name="input_position_gps">GPS Coordinates</string>
+    <string name="input_button">Input Location</string>
+    <string name="cur_position">Current Location</string>
+    <string name="zoom_in">Zoom In</string>
+    <string name="zoom_out">Zoom Out</string>
+
+    <string name="map_pic_sate">Satellite</string>
+    <string name="map_pic_normal">Normal</string>
+
+    <string name="update_title">New Version Available</string>
+    <string name="update_downloading">Downloading update...</string>
+    <string name="update_last">KailLocation is up to date</string>
+    <string name="update_download">Download</string>
+    <string name="update_ignore">Ignore</string>
+    <string name="update_time">Updated: </string>
+    <string name="update_commit">Release Notes: </string>
+
+    <!-- Navigation Simulation -->
+    <string name="nav_sim_title">Navigation Simulation</string>
+    <string name="nav_sim_start">Start Navigation</string>
+    <string name="nav_sim_stop">Stop Navigation</string>
+    <string name="nav_sim_pause">Pause</string>
+    <string name="nav_sim_resume">Resume</string>
+    <string name="nav_sim_planning">Planning...</string>
+    <string name="nav_sim_start_point">Start:</string>
+    <string name="nav_sim_end_point">End:</string>
+    <string name="nav_sim_select_start">Select start point</string>
+    <string name="nav_sim_select_end">Select end point</string>
+    <string name="nav_sim_multi_route">Multi Route</string>
+    <string name="nav_sim_history_title">History (max 10)</string>
+    <string name="nav_sim_clear">Clear</string>
+    <string name="nav_sim_switch_route">Switch Route</string>
+    <string name="nav_sim_choose_route">Select Route</string>
+    <string name="nav_sim_speed_dialog_title">Set Speed (km/h)</string>
+    <string name="nav_sim_speed">Speed</string>
+    <string name="nav_sim_ok">OK</string>
+    <string name="nav_sim_cancel">Cancel</string>
+
+    <!-- Route Simulation -->
+    <string name="route_sim_title">Route Simulation</string>
+    <string name="route_sim_target">Target Route</string>
+    <string name="route_sim_history">History Routes</string>
+    <string name="route_sim_no_name">N/A</string>
+    <string name="route_sim_start">Start Simulation</string>
+    <string name="route_sim_stop">Stop Simulation</string>
+    <string name="route_sim_pause">Pause</string>
+    <string name="route_sim_resume">Resume</string>
+    <string name="route_sim_speed_btn">Speed/Freq</string>
+    <string name="route_sim_loop">Loop</string>
+    <string name="route_sim_rename_title">Rename Route</string>
+    <string name="route_sim_rename_ok">OK</string>
+    <string name="route_sim_rename_cancel">Cancel</string>
+    <string name="route_sim_need_route">Please add and save a route first</string>
+    <string name="route_sim_start_failed">Failed to start simulation</string>
+
+    <!-- Route Plan -->
+    <string name="route_plan_search_hint">Search places</string>
+    <string name="route_plan_map_type">Select Map Type</string>
+    <string name="route_plan_normal">Normal</string>
+    <string name="route_plan_satellite">Satellite</string>
+    <string name="route_plan_coord_title">Input Coordinates</string>
+    <string name="route_plan_latitude">Latitude</string>
+    <string name="route_plan_longitude">Longitude</string>
+    <string name="route_plan_coord_type">BD09 Coords (default WGS84)</string>
+    <string name="route_plan_ok">OK</string>
+    <string name="route_plan_cancel">Cancel</string>
+
+    <!-- Settings -->
+    <string name="setting_sim_scheme">Sensor Simulation Scheme</string>
+    <string name="setting_sim_fourier">Fourier Series</string>
+    <string name="setting_sim_sine_noise">Sine + Random Noise</string>
+    <string name="setting_step_sim">Step Counter Simulation</string>
+    <string name="setting_step_sim_summary">Control step detector (18) and step counter (19) event simulation</string>
+    <string name="setting_group_intercept">Intercept &amp; Downgrade</string>
+    <string name="setting_allow_get_current">Allow GetCurrentLocation</string>
+    <string name="setting_allow_get_current_summary">Disable to intercept getCurrentLocation requests</string>
+    <string name="setting_allow_register_listener">Allow Register Location Listener</string>
+    <string name="setting_allow_register_listener_summary">Disable to intercept registerLocationListener</string>
+    <string name="setting_allow_geofence">Allow Geofence Requests</string>
+    <string name="setting_allow_geofence_summary">Disable to intercept addGeofence</string>
+    <string name="setting_allow_get_location">Allow Location Lookup</string>
+    <string name="setting_allow_get_location_summary">Disable to intercept getFromLocation</string>
+    <string name="setting_disable_fused">Disable Fused Location</string>
+    <string name="setting_disable_fused_summary">Prevent apps from using fused provider</string>
+    <string name="setting_downgrade_cdma">Downgrade Network to CDMA</string>
+    <string name="setting_downgrade_cdma_summary">Disguise network location as cell tower location</string>
+    <string name="setting_disable_wifi_scan">Disable WiFi Scan</string>
+    <string name="setting_disable_wifi_scan_summary">Prevent apps from getting real WiFi scan results</string>
+    <string name="setting_group_anti_detect">Anti-Detection &amp; Anti-Pullback</string>
+    <string name="setting_hide_mock">Hide Mock Location</string>
+    <string name="setting_hide_mock_summary">Remove Location.isFromMockProvider flag</string>
+    <string name="setting_anti_pullback">Anti Location Pullback</string>
+    <string name="setting_anti_pullback_summary">Continuously broadcast location to prevent system pullback</string>
+    <string name="setting_group_other">Other</string>
+    <string name="setting_baidu_key">Baidu Map Key (restart required)</string>
+    <string name="setting_enable_log">Enable Log</string>
+    <string name="setting_enable_log_summary">Control console output and local file saving</string>
+    <string name="setting_map_zoom">Floating Window Map Zoom</string>
+    <string name="setting_map_zoom_summary">Range 10-21, higher = more detailed</string>
+    <string name="setting_current_version">Current Version</string>
+    <string name="setting_not_set">Not set</string>
+    <string name="setting_ok">OK</string>
+    <string name="setting_cancel">Cancel</string>
+
+    <!-- NFC Simulation -->
+    <string name="nfc_sim_title">NFC Simulation</string>
+    <string name="nfc_sim_status">NFC Status</string>
+    <string name="nfc_sim_enabled">Enabled</string>
+    <string name="nfc_sim_disabled">Disabled</string>
+    <string name="nfc_sim_read_success">Read Successful</string>
+    <string name="nfc_sim_clear">Clear</string>
+    <string name="nfc_sim_tag_id">Tag ID: %s</string>
+    <string name="nfc_sim_tag_type">Tag Type: %s</string>
+    <string name="nfc_sim_content">Content: %s</string>
+    <string name="nfc_sim_send_title">Simulate NFC Send</string>
+    <string name="nfc_sim_url">URL</string>
+    <string name="nfc_sim_package">App Package Name</string>
+    <string name="nfc_sim_send">Send</string>
+    <string name="nfc_sim_history">History</string>
+    <string name="nfc_sim_clear_history">Clear</string>
+    <string name="nfc_sim_no_history">No history records</string>
+    <string name="nfc_sim_rename_dialog_title">Rename</string>
+    <string name="nfc_sim_rename_name">Name</string>
+    <string name="nfc_sim_rename_ok">OK</string>
+    <string name="nfc_sim_rename_cancel">Cancel</string>
+    <string name="nfc_sim_rename_content_desc">Rename</string>
+    <string name="nfc_sim_delete_content_desc">Delete</string>
+    <string name="nfc_sim_help_title">Usage</string>
+    <string name="nfc_sim_help_content">1. Scan: Hold near NFC tag to read\n2. Send: Fill URL/package name then tap Send\n3. History: Tap to auto-fill, long press to rename</string>
+    <string name="nfc_sim_read_failed">Read failed: %s</string>
+    <string name="nfc_sim_input_hint">Please enter URL or package name</string>
+    <string name="nfc_sim_send_failed">Send failed: %s</string>
+    <string name="nfc_sim_sent">Sent: %s</string>
+    <string name="nfc_sim_opened">Opened: %s</string>
+    <string name="nfc_sim_need_nfc">Please enable NFC first</string>
+
+    <!-- Common -->
+    <string name="common_warning">Warning</string>
+    <string name="common_delete_all_confirm">Delete all history records?</string>
+    <string name="common_delete_item_confirm">Delete this history record?</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_ok">OK</string>
+
+    <!-- Drawer -->
+    <string name="drawer_env_check">Environment Check</string>
+    <string name="drawer_ok">OK</string>
+    <string name="drawer_nav_sim">Navigation Simulation</string>
+    <string name="drawer_nfc_sim">NFC Simulation</string>
+    <string name="drawer_run_mode">Run Mode</string>
+
+    <!-- Sponsor -->
+    <string name="sponsor_copied">Copied</string>
+    <string name="sponsor_copy_address">Copy Address</string>
+
+    <!-- Welcome -->
+    <string name="welcome_read">I have read</string>
+    <string name="welcome_and">and</string>
+    <string name="welcome_agreement_text">User Agreement</string>
+    <string name="welcome_privacy_text">Privacy Policy</string>
+
+    <!-- Joystick -->
+    <string name="joystick_speed">Joystick Speed: %s km/h</string>
+    <string name="joystick_progress">Progress: %s</string>
+    <string name="joystick_speed_label">Speed:</string>
+    <string name="joystick_modify">Modify</string>
+    <string name="joystick_route_progress">Current Progress: %s</string>
+
+    <!-- Go Utils Dialogs -->
+    <string name="goutils_enable_mock_title">Enable Mock Location</string>
+    <string name="goutils_enable_mock_msg">Please set this app as the mock location app in Developer Options</string>
+    <string name="goutils_settings">Settings</string>
+    <string name="goutils_cancel">Cancel</string>
+    <string name="goutils_enable_overlay_title">Enable Floating Window</string>
+    <string name="goutils_enable_overlay_msg">For stable simulation, it is recommended to enable the floating window</string>
+    <string name="goutils_enable_gps_title">Enable GPS</string>
+    <string name="goutils_enable_gps_msg">Enable GPS location service?</string>
+    <string name="goutils_ok">OK</string>
+    <string name="goutils_warning">Warning</string>
+    <string name="goutils_wifi_warning">Enabling WiFi (even without connecting) may cause location to snap back to real location. It is recommended to turn off WiFi and use mobile data!</string>
+    <string name="goutils_turn_off">Turn Off</string>
+    <string name="goutils_ignore">Ignore</string>
+
+    <!-- ViewModel messages -->
+    <string name="vm_update_failed">Update check failed: %s</string>
+    <string name="vm_up_to_date">Already up to date</string>
+    <string name="vm_search_city">China</string>
+    <string name="vm_need_location_permission">Location permission required to start simulation</string>
+    <string name="vm_unknown_location">Unknown Location</string>
+    <string name="vm_step_root_required">Step simulation requires ROOT mode</string>
+
+    <!-- History VM -->
+    <string name="history_vm_coord_wgs84">[Lng: %1$s Lat: %2$s]</string>
+    <string name="history_vm_coord_bd09">[Lng: %1$s Lat: %2$s]</string>
+    <string name="history_vm_offset">Lng offset: %.2fm\nLat offset: %.2fm</string>
+
+    <!-- Service -->
+    <string name="service_grant_overlay">Please grant overlay permission</string>
+    <string name="service_overlay_failed">Overlay initialization failed: %s</string>
+    <string name="service_set_mock_app">Please set this app as the mock location app in Developer Options</string>
+
+    <!-- Route Simulation Settings Dialog -->
+    <string name="route_sim_speed_text">Movement Speed</string>
+    <string name="route_sim_speed_fluctuation">Speed Fluctuation</string>
+    <string name="route_sim_step_text">Step Simulation</string>
+    <string name="route_sim_cadence_text">Cadence</string>
+    <string name="route_sim_cadence_format">%d steps/min · ~%.1f km/h</string>
+    <string name="route_sim_step_root_required">Step simulation requires ROOT mode</string>
+
+    <!-- Common error messages -->
+    <string name="error_cannot_open_email">Cannot open email app</string>
+    <string name="error_cannot_open_browser">Cannot open browser</string>
+    <string name="error_under_development">Feature under development...</string>
+    <string name="download_progress">Downloading… %d%%</string>
+
+    <!-- Settings additional -->
+    <string name="setting_group_satellite_and_signal">Satellite &amp; Signal Simulation</string>
+    <string name="setting_mock_speed">Simulated Move Speed (m/s)</string>
+    <string name="setting_accuracy_title">Location Jitter Range (m)</string>
+    <string name="setting_min_satellites">Min Satellite Count</string>
+    <string name="setting_min_satellites_summary">BeiDou satellites only</string>
+    <string name="setting_report_interval">Report Interval (ms)</string>
+    <string name="setting_report_interval_summary">In milliseconds, default 100ms</string>
+    <string name="setting_gps_satellite_title">Simulate GPS Satellite Signal</string>
+    <string name="setting_gps_satellite_summary">Forge BeiDou satellite count and signal strength</string>
+    <string name="setting_agps_title">Enable AGPS Module</string>
+    <string name="setting_agps_summary">Assisted positioning (experimental)</string>
+    <string name="setting_nmea_title">Enable NMEA Module</string>
+    <string name="setting_nmea_summary">Forge NMEA data output</string>
+    <string name="setting_wlan_title">Simulate WLAN Data</string>
+    <string name="setting_wlan_summary">Forge WiFi positioning data</string>
+</resources>

@@ -122,6 +122,9 @@ fun HistoryScreen(
                         )
                         HorizontalDivider()
                     }
+                    item {
+                        com.kail.location.ads.NativeAdCard()
+                    }
                 }
             }
         }
@@ -130,8 +133,8 @@ fun HistoryScreen(
     if (showDeleteAllDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteAllDialog = false },
-            title = { Text("警告") },
-            text = { Text("确定要删除全部历史记录吗?") },
+            title = { Text(stringResource(R.string.common_warning)) },
+            text = { Text(stringResource(R.string.common_delete_all_confirm)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -139,12 +142,12 @@ fun HistoryScreen(
                         showDeleteAllDialog = false
                     }
                 ) {
-                    Text("确定")
+                    Text(stringResource(R.string.common_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteAllDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -153,8 +156,8 @@ fun HistoryScreen(
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("警告") },
-            text = { Text("确定要删除该项历史记录吗?") },
+            title = { Text(stringResource(R.string.common_warning)) },
+            text = { Text(stringResource(R.string.common_delete_item_confirm)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -162,12 +165,12 @@ fun HistoryScreen(
                         itemToDelete = null
                     }
                 ) {
-                    Text("确定")
+                    Text(stringResource(R.string.common_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { itemToDelete = null }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -177,7 +180,7 @@ fun HistoryScreen(
         var newName by remember { mutableStateOf(itemToEdit!!.name) }
         AlertDialog(
             onDismissRequest = { itemToEdit = null },
-            title = { Text("名称") },
+            title = { Text(stringResource(R.string.nfc_sim_rename_name)) },
             text = {
                 OutlinedTextField(
                     value = newName,
@@ -192,12 +195,12 @@ fun HistoryScreen(
                         itemToEdit = null
                     }
                 ) {
-                    Text("确认")
+                    Text(stringResource(R.string.common_confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { itemToEdit = null }) {
-                    Text("取消")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -267,14 +270,14 @@ fun HistoryItem(
             onDismissRequest = { showMenu = false }
         ) {
             DropdownMenuItem(
-                text = { Text("编辑") },
+                text = { Text(stringResource(R.string.common_edit)) },
                 onClick = {
                     showMenu = false
                     onEditClick()
                 }
             )
             DropdownMenuItem(
-                text = { Text("删除") },
+                text = { Text(stringResource(R.string.common_delete)) },
                 onClick = {
                     showMenu = false
                     onDeleteClick()

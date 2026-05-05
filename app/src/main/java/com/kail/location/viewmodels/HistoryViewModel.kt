@@ -137,8 +137,8 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
                     longitudeBd09 = bd09Longitude,
                     latitudeBd09 = bd09Latitude,
                     displayTime = GoUtils.timeStamp2Date(timeStamp.toString()),
-                    displayWgs84 = "[经度:$doubleLongitude 纬度:$doubleLatitude]",
-                    displayBd09 = "[经度:$doubleBDLongitude 纬度:$doubleBDLatitude]"
+                    displayWgs84 = String.format(getApplication<Application>().getString(R.string.history_vm_coord_wgs84), doubleLongitude, doubleLatitude),
+                    displayBd09 = String.format(getApplication<Application>().getString(R.string.history_vm_coord_bd09), doubleBDLongitude, doubleBDLatitude)
                 ))
             }
             cursor.close()
@@ -243,7 +243,7 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
 
             val offsetMessage = String.format(
                 Locale.US,
-                "经度偏移: %.2f米\n纬度偏移: %.2f米",
+                getApplication<Application>().getString(R.string.history_vm_offset),
                 randomLonOffset,
                 randomLatOffset
             )

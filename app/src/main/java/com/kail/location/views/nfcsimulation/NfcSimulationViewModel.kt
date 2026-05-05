@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 import org.json.JSONObject
+import com.kail.location.R
 import com.kail.location.views.nfcsimulation.NfcSimulationContract.NavigateDestination
 import com.kail.location.views.nfcsimulation.NfcSimulationContract.NfcHistoryItem
 
@@ -184,7 +185,7 @@ class NfcSimulationViewModel : ViewModel() {
                 }
                 it.close()
             } catch (e: Exception) {
-                _ndefContent.value = "读取失败: ${e.message}"
+                _ndefContent.value = context?.getString(R.string.nfc_sim_read_failed, e.message) ?: "读取失败: ${e.message}"
             }
         }
     }
@@ -326,7 +327,7 @@ class NfcSimulationViewModel : ViewModel() {
     
     fun sendMockNfc(context: Context) {
         if (_mockUrl.value.isBlank() && _mockPackageName.value.isBlank()) {
-            _sendResult.value = "请输入URL或包名"
+            _sendResult.value = context.getString(R.string.nfc_sim_input_hint)
             return
         }
         
@@ -334,7 +335,7 @@ class NfcSimulationViewModel : ViewModel() {
             val result = dispatchNfc(context, _mockUrl.value, _mockPackageName.value)
             _sendResult.value = result
         } catch (e: Exception) {
-            _sendResult.value = "发送失败: ${e.message}"
+            _sendResult.value = context.getString(R.string.nfc_sim_send_failed, e.message)
         }
     }
     
@@ -358,7 +359,7 @@ class NfcSimulationViewModel : ViewModel() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             
             context.startActivity(intent)
-            "已发送: ${url.ifBlank { packageName }}"
+            context.getString(R.string.nfc_sim_sent, url.ifBlank { packageName })
         } catch (e: Exception) {
             try {
                 val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -367,9 +368,9 @@ class NfcSimulationViewModel : ViewModel() {
                 }
                 viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(viewIntent)
-                "已打开: $url"
+                context.getString(R.string.nfc_sim_opened, url)
             } catch (e2: Exception) {
-                "发送失败: ${e2.message}"
+                context.getString(R.string.nfc_sim_send_failed, e2.message)
             }
         }
     }

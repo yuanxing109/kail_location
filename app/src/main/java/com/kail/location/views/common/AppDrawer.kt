@@ -84,11 +84,11 @@ fun AppDrawer(
     if (showEnvDialog) {
         AlertDialog(
             onDismissRequest = { showEnvDialog = false },
-            title = { Text("环境检测") },
+            title = { Text(stringResource(R.string.drawer_env_check)) },
             text = { Text(envMessage) },
             confirmButton = {
                 TextButton(onClick = { showEnvDialog = false }) {
-                    Text("确定")
+                    Text(stringResource(R.string.drawer_ok))
                 }
             }
         )
@@ -111,14 +111,14 @@ fun AppDrawer(
             onClick = { scope.launch { drawerState.close(); onNavigate(R.id.nav_route_simulation) } }
         )
         NavigationDrawerItem(
-            label = { Text("模拟导航") },
+            label = { Text(stringResource(R.string.drawer_nav_sim)) },
             icon = { Icon(Icons.Default.Search, contentDescription = null) },
             selected = currentScreen == "NavigationSimulation",
             onClick = { scope.launch { drawerState.close(); onNavigate(R.id.nav_navigation_simulation) } }
         )
 
         NavigationDrawerItem(
-            label = { Text("NFC模拟") },
+            label = { Text(stringResource(R.string.drawer_nfc_sim)) },
             icon = { Icon(Icons.Default.Settings, contentDescription = null) },
             selected = currentScreen == "NfcSimulation",
             onClick = { scope.launch { drawerState.close(); onNavigate(R.id.nav_nfc_simulation) } }
@@ -140,7 +140,7 @@ fun AppDrawer(
         )
 
         NavigationDrawerItem(
-            label = { Text("运行模式: ${if (runMode == "root") "Root" else "NoRoot"}") },
+            label = { Text(stringResource(R.string.drawer_run_mode)) },
             icon = { Icon(painterResource(R.drawable.ic_menu_dev), contentDescription = null) },
             selected = false,
             onClick = { scope.launch { drawerState.close(); showRunModeDialog = true } }

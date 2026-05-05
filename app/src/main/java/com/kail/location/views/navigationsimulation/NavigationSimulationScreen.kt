@@ -117,14 +117,14 @@ fun NavigationSimulationScreen(
     if (showSpeedDialog) {
         AlertDialog(
             onDismissRequest = { showSpeedDialog = false },
-            title = { Text("设置速度 (km/h)") },
+            title = { Text(stringResource(R.string.nav_sim_speed_dialog_title)) },
             text = {
                 OutlinedTextField(
                     value = speedStr,
                     onValueChange = { if (it.all { char -> char.isDigit() || char == '.' }) speedStr = it },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    label = { Text("速度") }
+                    label = { Text(stringResource(R.string.nav_sim_speed)) }
                 )
             },
             confirmButton = {
@@ -133,12 +133,12 @@ fun NavigationSimulationScreen(
                     viewModel.setSpeed(speed)
                     showSpeedDialog = false 
                 }) {
-                    Text("确定")
+                    Text(stringResource(R.string.nav_sim_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showSpeedDialog = false }) {
-                    Text("取消")
+                    Text(stringResource(R.string.nav_sim_cancel))
                 }
             }
         )
@@ -161,7 +161,7 @@ fun NavigationSimulationScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("模拟导航", color = Color.White) },
+                    title = { Text(stringResource(R.string.nav_sim_title), color = Color.White) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
@@ -177,7 +177,6 @@ fun NavigationSimulationScreen(
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(Color(0xFFF5F5F5))
             ) {
                 if (!isSearchingStart && !isSearchingEnd) {
                     Column(
@@ -189,8 +188,7 @@ fun NavigationSimulationScreen(
                             .fillMaxWidth()
                             .padding(16.dp),
                         shape = RoundedCornerShape(8.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             // Start Point
@@ -201,7 +199,7 @@ fun NavigationSimulationScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "起点:",
+                                    text = stringResource(R.string.nav_sim_start_point),
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.width(60.dp)
@@ -212,8 +210,8 @@ fun NavigationSimulationScreen(
                                         .clickable { pickStart() }
                                 ) {
                                     Text(
-                                        text = if (startPoint.isEmpty()) "请选择起点" else startPoint,
-                                        color = if (startPoint.isEmpty()) Color.Gray else Color.Black
+                                        text = if (startPoint.isEmpty()) stringResource(R.string.nav_sim_select_start) else startPoint,
+                                        color = if (startPoint.isEmpty()) Color.Gray else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 IconButton(onClick = { pickStart() }) {
@@ -231,7 +229,7 @@ fun NavigationSimulationScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "终点:",
+                                    text = stringResource(R.string.nav_sim_end_point),
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.width(60.dp)
@@ -242,8 +240,8 @@ fun NavigationSimulationScreen(
                                         .clickable { pickEnd() }
                                 ) {
                                     Text(
-                                        text = if (endPoint.isEmpty()) "请选择终点" else endPoint,
-                                        color = if (endPoint.isEmpty()) Color.Gray else Color.Black
+                                        text = if (endPoint.isEmpty()) stringResource(R.string.nav_sim_select_end) else endPoint,
+                                        color = if (endPoint.isEmpty()) Color.Gray else MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 IconButton(onClick = { pickEnd() }) {
@@ -258,42 +256,52 @@ fun NavigationSimulationScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (!isSimulating) {
+                            if (!isSimulating) {
+                                Button(
+                                    onClick = { viewModel.startSimulation() },
+                                    enabled = !isLoading && startPoint.isNotEmpty() && endPoint.isNotEmpty(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                                        disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    shape = RoundedCornerShape(24.dp),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    if (isLoading) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(20.dp),
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(stringResource(R.string.nav_sim_planning), color = MaterialTheme.colorScheme.onPrimary)
+                                    } else {
+                                        Text(stringResource(R.string.nav_sim_start), color = MaterialTheme.colorScheme.onPrimary)
+                                    }
+                                }
+                            } else {
+                                Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                     Button(
-                                        onClick = { viewModel.startSimulation() },
-                                        enabled = !isLoading && startPoint.isNotEmpty() && endPoint.isNotEmpty(),
+                                        onClick = { if (isPaused) viewModel.resumeSimulation() else viewModel.pauseSimulation() },
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = MaterialTheme.colorScheme.primary,
                                             contentColor = MaterialTheme.colorScheme.onPrimary
                                         ),
                                         shape = RoundedCornerShape(24.dp),
                                         modifier = Modifier.weight(1f)
-                                    ) {
-                                        if (isLoading) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.size(20.dp),
-                                                color = MaterialTheme.colorScheme.onPrimary
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text("规划中...", color = MaterialTheme.colorScheme.onPrimary)
-                                        } else {
-                                            Text("开始模拟", color = MaterialTheme.colorScheme.onPrimary)
-                                        }
-                                    }
-                                } else {
-                                    Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                        Button(
-                                            onClick = { if (isPaused) viewModel.resumeSimulation() else viewModel.pauseSimulation() },
-                                            enabled = !isLoading,
-                                            modifier = Modifier.weight(1f)
-                                        ) { Text(if (isPaused) "继续模拟" else "暂停模拟") }
-                                        Button(
-                                            onClick = { viewModel.stopSimulation() },
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                                            modifier = Modifier.weight(1f)
-                                        ) { Text("结束模拟") }
-                                    }
+                                    ) { Text(if (isPaused) stringResource(R.string.nav_sim_resume) else stringResource(R.string.nav_sim_pause)) }
+                                    Button(
+                                        onClick = { viewModel.stopSimulation() },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Red,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                        shape = RoundedCornerShape(24.dp),
+                                        modifier = Modifier.weight(1f)
+                                    ) { Text(stringResource(R.string.nav_sim_stop)) }
                                 }
+                            }
                                 
                                 Spacer(modifier = Modifier.width(16.dp))
                                 
@@ -302,7 +310,7 @@ fun NavigationSimulationScreen(
                                         checked = isMultiRoute,
                                         onCheckedChange = { viewModel.setMultiRoute(it) }
                                     )
-                                    Text("多路线", fontSize = 14.sp)
+                                    Text(stringResource(R.string.nav_sim_multi_route), fontSize = 14.sp)
                                 }
                                 
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -322,7 +330,7 @@ fun NavigationSimulationScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "历史数据 (最多显示10条)",
+                            text = stringResource(R.string.nav_sim_history_title),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
@@ -332,7 +340,7 @@ fun NavigationSimulationScreen(
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                             modifier = Modifier.height(32.dp)
                         ) {
-                            Text("清空", fontSize = 12.sp, color = Color.Red)
+                            Text(stringResource(R.string.nav_sim_clear), fontSize = 12.sp, color = Color.Red)
                         }
                     }
 
@@ -346,8 +354,7 @@ fun NavigationSimulationScreen(
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
                                     .clickable { viewModel.selectHistoryRoute(route) },
-                                shape = RoundedCornerShape(8.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color.White)
+                                shape = RoundedCornerShape(8.dp)
                             ) {
                                 Text(
                                     text = "${route.startName} -> ${route.endName}",
@@ -355,6 +362,9 @@ fun NavigationSimulationScreen(
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
+                        }
+                        item {
+                            com.kail.location.ads.NativeAdCard()
                         }
                     }
                 }
@@ -370,67 +380,74 @@ fun NavigationSimulationScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(480.dp)
-                            .padding(4.dp) // Reduced padding for wider view
-                            .background(Color.White, RoundedCornerShape(8.dp))
+                            .padding(4.dp)
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
                     ) {
-                        val context = androidx.compose.ui.platform.LocalContext.current
-                        val mapView = remember { com.baidu.mapapi.map.MapView(context) }
-                        DisposableEffect(Unit) {
-                            onDispose { mapView.onDestroy() }
-                        }
-                        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize()) { view ->
-                            val map = view.map
-                            map.clear()
-                            val routes = candidateRoutes
-                            routes.forEachIndexed { i, route ->
-                                val color = if (i == selectedIndex) android.graphics.Color.GREEN else android.graphics.Color.GRAY
-                                val opt = com.baidu.mapapi.map.PolylineOptions()
-                                    .width(8)
-                                    .color(color)
-                                    .points(route)
-                                map.addOverlay(opt)
+                            val context = androidx.compose.ui.platform.LocalContext.current
+                            val mapView = remember { com.baidu.mapapi.map.MapView(context) }
+                            DisposableEffect(Unit) {
+                                onDispose { mapView.onDestroy() }
                             }
-                            val route = routes.getOrNull(selectedIndex)
-                            if (!route.isNullOrEmpty()) {
-                                // Add Markers
-                                val start = route.first()
-                                val end = route.last()
-                                val startMarker = MarkerOptions()
-                                    .position(start)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_gcoding))
-                                    .zIndex(9)
-                                map.addOverlay(startMarker)
-                                
-                                val endMarker = MarkerOptions()
-                                    .position(end)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_gcoding))
-                                    .zIndex(9)
-                                map.addOverlay(endMarker)
+                            AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize()) { view ->
+                                val map = view.map
+                                map.clear()
+                                val routes = candidateRoutes
+                                routes.forEachIndexed { i, route ->
+                                    val color = if (i == selectedIndex) android.graphics.Color.GREEN else android.graphics.Color.GRAY
+                                    val opt = com.baidu.mapapi.map.PolylineOptions()
+                                        .width(8)
+                                        .color(color)
+                                        .points(route)
+                                    map.addOverlay(opt)
+                                }
+                                val route = routes.getOrNull(selectedIndex)
+                                if (!route.isNullOrEmpty()) {
+                                    val start = route.first()
+                                    val end = route.last()
+                                    val startMarker = MarkerOptions()
+                                        .position(start)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_gcoding))
+                                        .zIndex(9)
+                                    map.addOverlay(startMarker)
+                                    
+                                    val endMarker = MarkerOptions()
+                                        .position(end)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_gcoding))
+                                        .zIndex(9)
+                                    map.addOverlay(endMarker)
 
-                                val builder = com.baidu.mapapi.model.LatLngBounds.Builder()
-                                route.forEach { builder.include(it) }
-                                val bounds = builder.build()
-                                // Update camera with minimal padding
-                                val update = com.baidu.mapapi.map.MapStatusUpdateFactory.newLatLngBounds(bounds, 50, 50, 50, 50)
-                                map.setMapStatus(update)
+                                    val builder = com.baidu.mapapi.model.LatLngBounds.Builder()
+                                    route.forEach { builder.include(it) }
+                                    val bounds = builder.build()
+                                    val update = com.baidu.mapapi.map.MapStatusUpdateFactory.newLatLngBounds(bounds, 50, 50, 50, 50)
+                                    map.setMapStatus(update)
+                                }
                             }
-                        }
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Button(onClick = { selectedIndex = (selectedIndex + 1) % candidateRoutes.size }) { Text("切换路线") }
-                            Button(onClick = { viewModel.chooseCandidate(selectedIndex) }) { Text("选择路线") }
+                            Row(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Button(
+                                    onClick = { selectedIndex = (selectedIndex + 1) % candidateRoutes.size },
+                                    shape = RoundedCornerShape(24.dp)
+                                ) { Text(stringResource(R.string.nav_sim_switch_route)) }
+                                Button(
+                                    onClick = { viewModel.chooseCandidate(selectedIndex) },
+                                    shape = RoundedCornerShape(24.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                ) { Text(stringResource(R.string.nav_sim_choose_route)) }
+                            }
                         }
                     }
                 }
-            }
 
 
             }
         }
     }
 }
- 

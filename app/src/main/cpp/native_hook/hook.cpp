@@ -42,6 +42,7 @@ static int mSensorHandleStepDetector = -1;
 static int mSensorHandleStepCounter = -1;
 static int isMocking = 0;
 static int isAuthorized = 0;
+static int step_sim_enabled = 1;
 static float current_spm = 120.0f;
 static int step_event_counter = 0;
 
@@ -51,7 +52,7 @@ static int step_event_counter = 0;
 void setRouteSimulationActive(bool active) {
     route_simulation_active = active;
     if (!active) {
-        gait::SensorSimulator::Get().UpdateParams(120.0f, 0, false);
+        gait::SensorSimulator::Get().UpdateParams(120.0f, 0, 0, false);
     }
 }
 
@@ -175,7 +176,7 @@ extern "C" void hooked_convert_to_sensor_event(void* param_1, void* param_2) {
 //    ALOGI("check: isMocking=%d, type=%d, SDT=%d, SSD=%d, SCT=%d, SSC=%d",
 //        isMocking, sensor_type, stepdetectorTrigger, mSensorHandleStepDetector,
 //        stepcounterTrigger, mSensorHandleStepCounter);
-    if ((isMocking != 0) && (sensor_type == 5)) {
+    if ((isMocking != 0) && step_sim_enabled && (sensor_type == 5)) {
         if ((stepdetectorTrigger == 1) && (mSensorHandleStepDetector != -1) &&
             (stepcounterTrigger == 1) && (mSensorHandleStepCounter != -1)) {
             if (step_event_counter < 4) {
@@ -284,7 +285,7 @@ static void install_convert_to_sensor_event_hook() {
 extern "C" {
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeSetWriteOffset(
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetWriteOffset(
     JNIEnv* env, 
     jclass clazz, 
     jlong offset
@@ -293,7 +294,7 @@ Java_com_kail_location_xposed_FakeLocState_nativeSetWriteOffset(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeSetConvertOffset(
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetConvertOffset(
     JNIEnv* env, 
     jclass clazz, 
     jlong offset
@@ -302,7 +303,7 @@ Java_com_kail_location_xposed_FakeLocState_nativeSetConvertOffset(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeSetRouteSimulation(
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetRouteSimulation(
     JNIEnv* env, 
     jclass clazz, 
     jboolean active,
@@ -314,7 +315,7 @@ Java_com_kail_location_xposed_FakeLocState_nativeSetRouteSimulation(
     if (isActive) {
         current_spm = spm;
         setRouteSimulationActive(true);
-        gait::SensorSimulator::Get().UpdateParams(spm, mode, true);
+        gait::SensorSimulator::Get().UpdateParams(spm, mode, 0, true);
         isMocking = 1;
         step_event_counter = 0;
     } else {
@@ -324,18 +325,19 @@ Java_com_kail_location_xposed_FakeLocState_nativeSetRouteSimulation(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeSetGaitParams(
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetGaitParams(
     JNIEnv* env, 
     jclass clazz, 
     jfloat spm, 
-    jint mode, 
+    jint mode,
+    jint scheme,
     jboolean enable
 ) {
-    gait::SensorSimulator::Get().UpdateParams(spm, mode, enable);
+    gait::SensorSimulator::Get().UpdateParams(spm, mode, scheme, enable);
 }
 
 JNIEXPORT jboolean JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeReloadConfig(
+Java_com_kail_location_xposed_core_FakeLocState_nativeReloadConfig(
     JNIEnv* env, 
     jclass clazz
 ) {
@@ -343,7 +345,7 @@ Java_com_kail_location_xposed_FakeLocState_nativeReloadConfig(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeSetMocking(
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetMocking(
     JNIEnv* env, 
     jclass clazz, 
     jint mocking
@@ -352,7 +354,7 @@ Java_com_kail_location_xposed_FakeLocState_nativeSetMocking(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeSetAuthorized(
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetAuthorized(
     JNIEnv* env, 
     jclass clazz, 
     jint authorized
@@ -361,7 +363,16 @@ Java_com_kail_location_xposed_FakeLocState_nativeSetAuthorized(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_FakeLocState_nativeInitHook(
+Java_com_kail_location_xposed_core_FakeLocState_nativeSetStepSimEnabled(
+    JNIEnv* env, 
+    jclass clazz, 
+    jboolean enabled
+) {
+    step_sim_enabled = (enabled != JNI_FALSE) ? 1 : 0;
+}
+
+JNIEXPORT void JNICALL 
+Java_com_kail_location_xposed_core_FakeLocState_nativeInitHook(
     JNIEnv* env, 
     jclass clazz
 ) {

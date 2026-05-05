@@ -60,11 +60,13 @@ class ServiceGoRoot : Service() {
     private var mRouteLoop = false
     private var mSegmentProgressMeters = 0.0
 
-    private var portalRandomKey: String? = null
-    private var portalStarted: Boolean = false
+    private var kailRandomKey: String? = null
+    private var kailStarted: Boolean = false
     private var locationLoopStarted: Boolean = false
     private var stepEnabledCache: Boolean = false
     private var stepFreqCache: Double = 0.0
+    private var simSchemeCache: Int = 0
+    private var stepSimEnabledCache: Boolean = true
     private var isRouteSimulationCache: Boolean = false
     private var speedFluctuation: Boolean = false
 
@@ -106,7 +108,7 @@ class ServiceGoRoot : Service() {
         const val ACTION_STATUS_CHANGED = "com.kail.location.service.STATUS_CHANGED"
         const val EXTRA_IS_SIMULATING = "is_simulating"
         const val EXTRA_IS_PAUSED = "is_paused"
-        private const val PORTAL_PROVIDER = "kail"
+        private const val KAIL_PROVIDER = "kail"
     }
 
     private fun broadcastStatus() {
@@ -149,7 +151,7 @@ class ServiceGoRoot : Service() {
         try {
             KailLog.i(this, "ServiceGoRoot", "4. initJoyStick")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-                GoUtils.DisplayToast(applicationContext, "请授予悬浮窗权限")
+                GoUtils.DisplayToast(applicationContext, getString(R.string.service_grant_overlay))
             }
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
             val joystickEnabledPref = prefs.getBoolean("setting_joystick_enabled", false)
@@ -163,7 +165,7 @@ class ServiceGoRoot : Service() {
             }
         } catch (e: Throwable) {
             KailLog.e(this, "ServiceGoRoot", "Error initializing JoyStick: ${e.message}")
-            GoUtils.DisplayToast(applicationContext, "悬浮窗初始化失败: ${e.message}")
+            GoUtils.DisplayToast(applicationContext, getString(R.string.service_overlay_failed, e.message))
         }
 
         broadcastStatus()
@@ -194,8 +196,9 @@ class ServiceGoRoot : Service() {
                             if (this::mJoystickManager.isInitialized) {
                                 mJoystickManager.setRoutePauseState(false)
                             }
-                            portalSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache) }
-                            broadcastStatus()
+                             kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
+                             kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
+                             broadcastStatus()
                             KailLog.log(this, "ServiceGoRoot", "Resumed simulation (isStop=false)", isHighFrequency = false)
                         } catch (e: Exception) {
                             KailLog.log(this, "ServiceGoRoot", "Resume error: ${e.message}", isHighFrequency = false)
@@ -257,8 +260,8 @@ class ServiceGoRoot : Service() {
                         try {
                             val kmh = intent.getFloatExtra(EXTRA_ROUTE_SPEED, (mSpeed * 3.6).toFloat())
                             mSpeed = kmh.toDouble() / 3.6
-                            portalStartIfNeeded()
-                            portalSend("set_speed") { putFloat("speed", mSpeed.toFloat()) }
+                            kailStartIfNeeded()
+                            kailSend("set_speed") { putFloat("speed", mSpeed.toFloat()) }
                             KailLog.i(this, "ServiceGoRoot", "speed updated to km/h=$kmh m/s=$mSpeed")
                         } catch (e: Exception) {
                             KailLog.e(this, "ServiceGoRoot", "set_speed error: ${e.message}")
@@ -276,11 +279,12 @@ class ServiceGoRoot : Service() {
                     }
                     CONTROL_SET_STEP -> {
                         try {
-                            stepEnabledCache = intent.getBooleanExtra(EXTRA_STEP_ENABLED, stepEnabledCache)
-                            stepFreqCache = intent.getFloatExtra(EXTRA_STEP_FREQ, stepFreqCache.toFloat()).toDouble()
-                            portalStartIfNeeded()
-                            portalSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache) }
-                            portalSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
+                             stepEnabledCache = intent.getBooleanExtra(EXTRA_STEP_ENABLED, stepEnabledCache)
+                             stepFreqCache = intent.getFloatExtra(EXTRA_STEP_FREQ, stepFreqCache.toFloat()).toDouble()
+                             kailStartIfNeeded()
+                             kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
+                             kailSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
+                             kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
                             KailLog.i(this, "ServiceGoRoot", "step simulation updated: enabled=$stepEnabledCache, freq=$stepFreqCache")
                         } catch (e: Exception) {
                             KailLog.e(this, "ServiceGoRoot", "set_step error: ${e.message}")
@@ -293,6 +297,8 @@ class ServiceGoRoot : Service() {
             stepFreqCache = intent.getFloatExtra(EXTRA_STEP_FREQ, 0f).toDouble()
             isRouteSimulationCache = intent.getBooleanExtra("EXTRA_IS_ROUTE_SIMULATION", false)
             speedFluctuation = intent.getBooleanExtra(EXTRA_SPEED_FLUCTUATION, false)
+            simSchemeCache = PreferenceManager.getDefaultSharedPreferences(this).getString("setting_sim_scheme", "0")?.toIntOrNull() ?: 0
+            stepSimEnabledCache = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("setting_step_sim_enabled", true)
         }
 
         if (mNotification != null) {
@@ -368,9 +374,11 @@ class ServiceGoRoot : Service() {
 
             if (this::mLocHandler.isInitialized) {
                 mLocHandler.post {
-                    portalInitIfNeeded()
-                    portalStartIfNeeded()
-                    portalUpdateOnce()
+                    kailInitIfNeeded()
+
+                    kailStartIfNeeded()
+
+                    kailUpdateOnce()
                 }
             }
 
@@ -387,7 +395,7 @@ class ServiceGoRoot : Service() {
                                 mJoystickManager.show()
                             }
                         } else {
-                            GoUtils.DisplayToast(applicationContext, "请授予悬浮窗权限")
+                            GoUtils.DisplayToast(applicationContext, getString(R.string.service_grant_overlay))
                         }
                     } else {
                         mJoystickManager.hide()
@@ -404,8 +412,8 @@ class ServiceGoRoot : Service() {
     override fun onDestroy() {
         KailLog.i(this, "ServiceGoRoot", "onDestroy started")
         try {
-            if (portalStarted) {
-                portalSend("set_route_simulation") {
+            if (kailStarted) {
+                kailSend("set_route_simulation") {
                     putBoolean("active", false)
                     putFloat("spm", 120f)
                     putInt("mode", 0)
@@ -431,7 +439,7 @@ class ServiceGoRoot : Service() {
                 mJoystickManager.destroy()
             }
 
-            portalStopSafe()
+            kailStopSafe()
 
             mActReceiver?.let { unregisterReceiver(it) }
             mActReceiver = null
@@ -556,7 +564,7 @@ class ServiceGoRoot : Service() {
                     }
 
                     if (!isStop) {
-                        portalTick()
+                        kailTick()
                     }
 
                     sendEmptyMessage(HANDLER_MSG_ID)
@@ -581,12 +589,12 @@ class ServiceGoRoot : Service() {
         mLocHandler.sendEmptyMessage(HANDLER_MSG_ID)
     }
 
-    private fun portalInitIfNeeded(): Boolean {
-        if (portalRandomKey != null) return true
+    private fun kailInitIfNeeded(): Boolean {
+        if (kailRandomKey != null) return true
         val rely = Bundle()
         KailLog.i(this, "ServiceGoRoot", "sending exchange_key...")
         val ok = kotlin.runCatching {
-            mLocManager.sendExtraCommand(PORTAL_PROVIDER, "exchange_key", rely)
+            mLocManager.sendExtraCommand(KAIL_PROVIDER, "exchange_key", rely)
         }.onFailure {
             KailLog.e(this, "ServiceGoRoot", "sendExtraCommand exception: ${it.message}")
         }.getOrDefault(false)
@@ -600,17 +608,17 @@ class ServiceGoRoot : Service() {
             return false
         }
         KailLog.i(this, "ServiceGoRoot", "exchange_key success, key=$key")
-        portalRandomKey = key
+        kailRandomKey = key
 
-        KailLog.i(this, "ServiceGoRoot", ">>> Calling portalLoadNativeLibraryIfNeeded...")
-        val nativeLoadResult = portalLoadNativeLibraryIfNeeded()
-        KailLog.i(this, "ServiceGoRoot", ">>> portalLoadNativeLibraryIfNeeded result: $nativeLoadResult")
+        KailLog.i(this, "ServiceGoRoot", ">>> Calling kailLoadNativeLibraryIfNeeded...")
+        val nativeLoadResult = kailLoadNativeLibraryIfNeeded()
+        KailLog.i(this, "ServiceGoRoot", ">>> kailLoadNativeLibraryIfNeeded result: $nativeLoadResult")
 
         return true
     }
 
-    private fun portalLoadNativeLibraryIfNeeded(): Boolean {
-        KailLog.i(this, "ServiceGoRoot", ">>> portalLoadNativeLibraryIfNeeded called")
+    private fun kailLoadNativeLibraryIfNeeded(): Boolean {
+        KailLog.i(this, "ServiceGoRoot", ">>> kailLoadNativeLibraryIfNeeded called")
         
         if (!com.kail.location.utils.ShellUtils.hasRoot()) {
             KailLog.e(this, "ServiceGoRoot", ">>> No root access!")
@@ -662,7 +670,7 @@ class ServiceGoRoot : Service() {
         val offsets = getOffsetsFromSystem()
         KailLog.i(this, "ServiceGoRoot", ">>> Got offsets: writeOffset=${offsets.first}, convertOffset=${offsets.second}")
         
-        val loadResult = portalSend("load_library") {
+        val loadResult = kailSend("load_library") {
             putString("path", soFile.absolutePath)
             putString("write_offset", offsets.first)
             putString("convert_offset", offsets.second)
@@ -671,7 +679,7 @@ class ServiceGoRoot : Service() {
         KailLog.i(this, "ServiceGoRoot", ">>> loadResult: $loadResult")
         
         if (loadResult && stepEnabledCache) {
-            portalSend("set_route_simulation") {
+            kailSend("set_route_simulation") {
                 putBoolean("active", true)
                 putFloat("spm", stepFreqCache.toFloat())
                 putInt("mode", 0)
@@ -731,79 +739,110 @@ class ServiceGoRoot : Service() {
         return Pair("0x0", "0x0")
     }
 
-    private fun portalSend(commandId: String, block: Bundle.() -> Unit = {}): Boolean {
-        val key = portalRandomKey ?: return false
+    private fun kailSend(commandId: String, block: Bundle.() -> Unit = {}): Boolean {
+        val key = kailRandomKey ?: return false
         val rely = Bundle()
         rely.putString("command_id", commandId)
         rely.block()
-        KailLog.i(this, "ServiceGoRoot", "PORTAL发送：cmd=$commandId，内容=$rely",isHighFrequency = true)
+        KailLog.i(this, "ServiceGoRoot", "KAIL发送：cmd=$commandId，内容=$rely",isHighFrequency = true)
         val ok = kotlin.runCatching {
-            mLocManager.sendExtraCommand(PORTAL_PROVIDER, key, rely)
+            mLocManager.sendExtraCommand(KAIL_PROVIDER, key, rely)
         }.onFailure {
-             KailLog.e(this, "ServiceGoRoot", "portalSend exception command=$commandId: ${it.message}")
-             portalRandomKey = null
-             portalStarted = false
-        }.getOrDefault(false)
+             KailLog.e(this, "ServiceGoRoot", "kailSend exception command=$commandId: ${it.message}")
+             kailRandomKey = null
+             kailStarted = false
+         }.getOrDefault(false)
         
         if (!ok) {
-            KailLog.e(this, "ServiceGoRoot", "PORTAL结果失败：cmd=$commandId，可能密钥失效",isHighFrequency = true)
-            portalRandomKey = null
-            portalStarted = false
+            KailLog.e(this, "ServiceGoRoot", "KAIL结果失败：cmd=$commandId，可能密钥失效",isHighFrequency = true)
+            kailRandomKey = null
+            kailStarted = false
         } else {
-            KailLog.i(this, "ServiceGoRoot", "PORTAL结果成功：cmd=$commandId",isHighFrequency = true)
+            KailLog.i(this, "ServiceGoRoot", "KAIL结果成功：cmd=$commandId",isHighFrequency = true)
         }
         return ok
     }
 
-    private fun portalStartIfNeeded(): Boolean {
-        if (portalStarted) return true
-        if (!portalInitIfNeeded()) {
-            KailLog.e(this, "ServiceGoRoot", "portalStartIfNeeded failed because init failed")
+    private fun kailStartIfNeeded(): Boolean {
+        if (kailStarted) return true
+        if (!kailInitIfNeeded()) {
+            KailLog.e(this, "ServiceGoRoot", "kailStartIfNeeded failed because init failed")
             return false
         }
-        val ok = portalSend("start") {
+        val ok = kailSend("start") {
             putDouble("speed", mSpeed)
             putDouble("altitude", mCurAlt)
             putFloat("accuracy", 1.0f)
         }
         if (ok) {
-            KailLog.i(this, "ServiceGoRoot", "portal start command success")
-            portalStarted = true
-            portalSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache) }
-            portalSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
+            KailLog.i(this, "ServiceGoRoot", "kail start command success")
+            kailStarted = true
+            // 推送全部配置到 Xposed 模块
+            pushConfigToXposed()
+            kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
+            kailSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
+            kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
         } else {
-            KailLog.e(this, "ServiceGoRoot", "portal start command failed")
+            KailLog.e(this, "ServiceGoRoot", "kail start command failed")
         }
         return ok
     }
 
-    private fun portalUpdateOnce() {
-        if (!portalStartIfNeeded()) {
-            KailLog.e(this, "ServiceGoRoot", "portalUpdateOnce failed because start failed")
+    private fun pushConfigToXposed() {
+        try {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            kailSend("set_config") {
+                putBoolean("enableMockGnss", prefs.getBoolean("setting_gps_satellite_sim", true))
+                putBoolean("enableMockWifi", prefs.getBoolean("setting_enable_mock_wifi", false))
+                putBoolean("disableGetCurrentLocation", !prefs.getBoolean("setting_allow_get_current_location", true))
+                putBoolean("disableRegisterLocationListener", !prefs.getBoolean("setting_allow_register_listener", true))
+                putBoolean("disableFusedLocation", prefs.getBoolean("setting_disable_fused_location", true))
+                putBoolean("disableNetworkLocation", true)
+                putBoolean("disableRequestGeofence", !prefs.getBoolean("setting_allow_geofence", true))
+                putBoolean("disableGetFromLocation", !prefs.getBoolean("setting_allow_get_from_location", true))
+                putBoolean("enableAGPS", prefs.getBoolean("setting_enable_agps", false))
+                putBoolean("enableNMEA", prefs.getBoolean("setting_enable_nmea", false))
+                putBoolean("hideMock", prefs.getBoolean("setting_hide_mock", true))
+                putBoolean("hookWifi", prefs.getBoolean("setting_disable_wifi_scan", true))
+                putBoolean("needDowngradeToCdma", prefs.getBoolean("setting_downgrade_to_cdma", true))
+                putBoolean("loopBroadcastLocation", prefs.getBoolean("setting_loop_broadcast", false))
+                putInt("minSatellites", prefs.getString("setting_min_satellites", "12")?.toIntOrNull() ?: 12)
+                putFloat("accuracy", prefs.getString("setting_accuracy", "25.0")?.toFloatOrNull() ?: 25.0f)
+                putInt("reportIntervalMs", prefs.getString("setting_report_interval", "100")?.toIntOrNull() ?: 100)
+            }
+            KailLog.i(this, "ServiceGoRoot", "pushConfigToXposed succeeded")
+        } catch (e: Exception) {
+            KailLog.e(this, "ServiceGoRoot", "pushConfigToXposed failed: ${e.message}")
+        }
+    }
+
+    private fun kailUpdateOnce() {
+        if (!kailStartIfNeeded()) {
+            KailLog.e(this, "ServiceGoRoot", "kailUpdateOnce failed because start failed")
             return
         }
-        portalSend("set_altitude") { putDouble("altitude", mCurAlt) }
-        portalSend("set_speed") { putFloat("speed", mSpeed.toFloat()) }
-        portalSend("set_bearing") { putDouble("bearing", mCurBea.toDouble()) }
-        portalSend("update_location") {
+        kailSend("set_altitude") { putDouble("altitude", mCurAlt) }
+        kailSend("set_speed") { putFloat("speed", mSpeed.toFloat()) }
+        kailSend("set_bearing") { putDouble("bearing", mCurBea.toDouble()) }
+        kailSend("update_location") {
             putDouble("lat", mCurLat)
             putDouble("lon", mCurLng)
             putString("mode", "=")
         }
-        portalSend("broadcast_location")
+        kailSend("broadcast_location")
     }
 
-    private fun portalTick() {
-        if (!portalStartIfNeeded()) return
+    private fun kailTick() {
+        if (!kailStartIfNeeded()) return
         val speedToSet = if (isStop) 0.0f else mSpeed.toFloat()
         val lat = mCurLat
         val lng = mCurLng
         val bearing = mCurBea.toDouble()
-//        KailLog.log(this, "ServiceGoRoot", "Portal Tick: lat=$lat, lng=$lng, speed=$speedToSet", isHighFrequency = true)
+//        KailLog.log(this, "ServiceGoRoot", "Kail Tick: lat=$lat, lng=$lng, speed=$speedToSet", isHighFrequency = true)
 // Use ThreadPool to send commands without blocking main loop
-        val key = portalRandomKey ?: return
+        val key = kailRandomKey ?: return
         val locMgr = mLocManager
-        val provider = PORTAL_PROVIDER
+        val provider = KAIL_PROVIDER
         
         Thread {
             try {
@@ -832,12 +871,12 @@ class ServiceGoRoot : Service() {
         }.start()
     }
 
-    private fun portalStopSafe() {
+    private fun kailStopSafe() {
         kotlin.runCatching {
-            portalSend("stop")
+            kailSend("stop")
         }
-        portalStarted = false
-        portalRandomKey = null
+        kailStarted = false
+        kailRandomKey = null
         
         KailLog.i(this, "ServiceGoRoot", ">>> Restoring SELinux to enforcing mode")
         val selinuxResult = com.kail.location.utils.ShellUtils.executeCommand("setenforce 1")

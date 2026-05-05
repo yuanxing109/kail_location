@@ -21,6 +21,7 @@ import com.baidu.mapapi.search.sug.SuggestionResult
 import com.baidu.mapapi.search.sug.SuggestionSearch
 import com.baidu.mapapi.search.sug.SuggestionSearchOption
 import com.kail.location.models.RouteInfo
+import com.kail.location.R
 import com.kail.location.service.ServiceGoRoot
 import com.kail.location.service.ServiceGoNoroot
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -180,9 +181,9 @@ class NavigationSimulationViewModel(application: Application) : AndroidViewModel
                     // Use MainExecutor to show toast
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         if (error != null) {
-                            Toast.makeText(context, "检查更新失败: $error", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_update_failed, error), Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "当前已是最新版本", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_up_to_date), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -282,7 +283,7 @@ class NavigationSimulationViewModel(application: Application) : AndroidViewModel
         }
         suggestionSearch.requestSuggestion(
             SuggestionSearchOption()
-                .city("全国")
+                .city(getApplication<Application>().getString(R.string.vm_search_city))
                 .keyword(query)
         )
     }
@@ -318,9 +319,6 @@ class NavigationSimulationViewModel(application: Application) : AndroidViewModel
                 .from(stNode)
                 .to(enNode)
         )
-        
-        // Save to history (Mock implementation)
-        addToHistory(_startPoint.value, _endPoint.value)
     }
 
     private fun startSimulationService(points: List<LatLng>) {
@@ -350,7 +348,7 @@ class NavigationSimulationViewModel(application: Application) : AndroidViewModel
         if (ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             ContextCompat.startForegroundService(app, intent)
         } else {
-            GoUtils.DisplayToast(app, "需要位置权限才能启动模拟")
+            GoUtils.DisplayToast(app, app.getString(R.string.vm_need_location_permission))
             return
         }
         _isSimulating.value = true
@@ -378,6 +376,7 @@ class NavigationSimulationViewModel(application: Application) : AndroidViewModel
     fun chooseCandidate(index: Int) {
         val routes = _candidateRoutes.value
         if (index in routes.indices) {
+            addToHistory(_startPoint.value, _endPoint.value)
             startSimulationService(routes[index])
             _candidateRoutes.value = emptyList()
         }

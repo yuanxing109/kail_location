@@ -69,7 +69,8 @@ fun RouteSimulationScreen(
     
     val historyRoutes by viewModel.historyRoutes.collectAsState()
     val selectedId by viewModel.selectedRouteId.collectAsState()
-    val currentRoute = historyRoutes.firstOrNull { it.id == selectedId } ?: historyRoutes.firstOrNull() ?: RouteInfo("-", "暂无", "暂无", "")
+    val noName = stringResource(R.string.route_sim_no_name)
+    val currentRoute = historyRoutes.firstOrNull { it.id == selectedId } ?: historyRoutes.firstOrNull() ?: RouteInfo("-", noName, noName, "")
     val updateInfo by viewModel.updateInfo.collectAsState()
     val isSimulating by viewModel.isSimulating.collectAsState()
     val isPaused by viewModel.isPaused.collectAsState()
@@ -131,7 +132,7 @@ fun RouteSimulationScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("路线模拟") },
+                    title = { Text(stringResource(R.string.route_sim_title)) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -154,7 +155,6 @@ fun RouteSimulationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(Color(0xFFF5F5F5))
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize()
@@ -194,7 +194,7 @@ fun RouteSimulationScreen(
 
                     // History Title
                     Text(
-                        text = "历史路线",
+                        text = stringResource(R.string.route_sim_history),
                         color = Color.Gray,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(start = 24.dp, bottom = 8.dp)
@@ -207,7 +207,6 @@ fun RouteSimulationScreen(
                     ) {
                         items(historyRoutes) { route ->
                             Card(
-                                colors = CardDefaults.cardColors(containerColor = Color.White),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                                 shape = RoundedCornerShape(8.dp),
                                 modifier = Modifier.fillMaxWidth().clickable { viewModel.selectRoute(route.id) }
@@ -218,8 +217,8 @@ fun RouteSimulationScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
-                                        Text(text = route.startName, fontSize = 16.sp, color = Color.Black)
-                                        Text(text = route.endName, fontSize = 14.sp, color = Color.Gray)
+                                        Text(text = route.startName, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text(text = route.endName, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                                     }
                                     Row {
                                         IconButton(onClick = { renameTarget = route; renameText = route.startName }) {
@@ -231,6 +230,11 @@ fun RouteSimulationScreen(
                                     }
                                 }
                             }
+                        }
+                        item {
+                            com.kail.location.ads.NativeAdCard(
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
                         }
                     }
                 }
@@ -258,15 +262,15 @@ fun RouteSimulationScreen(
     if (renameTarget != null) {
         AlertDialog(
             onDismissRequest = { renameTarget = null },
-            title = { Text("重命名路线") },
+            title = { Text(stringResource(R.string.route_sim_rename_title)) },
             text = {
                 OutlinedTextField(value = renameText, onValueChange = { renameText = it })
             },
             confirmButton = {
-                TextButton(onClick = { viewModel.renameRoute(renameTarget!!.id, renameText); renameTarget = null }) { Text("确定") }
+                TextButton(onClick = { viewModel.renameRoute(renameTarget!!.id, renameText); renameTarget = null }) { Text(stringResource(R.string.route_sim_rename_ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { renameTarget = null }) { Text("取消") }
+                TextButton(onClick = { renameTarget = null }) { Text(stringResource(R.string.route_sim_rename_cancel)) }
             }
         )
     }
@@ -296,7 +300,6 @@ fun RouteCard(
     onPauseResume: (() -> Unit)? = null
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier.fillMaxWidth()
@@ -304,7 +307,7 @@ fun RouteCard(
         Column(modifier = Modifier.padding(16.dp)) {
             if (isTarget) {
                 Text(
-                    text = "目标路线",
+                    text = stringResource(R.string.route_sim_target),
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -331,7 +334,7 @@ fun RouteCard(
                         modifier = Modifier
                             .width(1.dp)
                             .height(24.dp)
-                            .background(Color.LightGray) // Ideally dashed
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
                     )
                     
                     // End Icon
@@ -344,24 +347,18 @@ fun RouteCard(
                 }
 
                 // Route Details
-                Column(modifier = Modifier.weight(1f)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 24.dp) // Space for the line
-                    ) {
-                        Text(
-                            text = route.startName + route.distance,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = route.endName,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                    }
+                Column(modifier = Modifier.weight(1f).padding(top = 4.dp)) {
+                    Text(
+                        text = route.startName + route.distance,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = route.endName,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
 
@@ -378,7 +375,7 @@ fun RouteCard(
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             shape = RoundedCornerShape(20.dp),
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-                        ) { Text("启动模拟", fontSize = 14.sp) }
+                        ) { Text(stringResource(R.string.route_sim_start), fontSize = 14.sp) }
                     } else {
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             Button(
@@ -386,19 +383,19 @@ fun RouteCard(
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 shape = RoundedCornerShape(20.dp),
                                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-                            ) { Text(if (isPaused) "继续模拟" else "暂停模拟", fontSize = 14.sp) }
+                            ) { Text(if (isPaused) stringResource(R.string.route_sim_resume) else stringResource(R.string.route_sim_pause), fontSize = 14.sp) }
                             Button(
                                 onClick = { onStopSimulation?.invoke() },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                                 shape = RoundedCornerShape(20.dp),
                                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-                            ) { Text("结束模拟", fontSize = 14.sp) }
+                            ) { Text(stringResource(R.string.route_sim_stop), fontSize = 14.sp) }
                         }
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "速/频",
+                            text = stringResource(R.string.route_sim_speed_btn),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
@@ -418,7 +415,7 @@ fun RouteCard(
                         Spacer(modifier = Modifier.width(16.dp))
                         
                         Text(
-                            text = "循环",
+                            text = stringResource(R.string.route_sim_loop),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
@@ -471,7 +468,6 @@ fun SettingsDialog(
     
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -484,7 +480,7 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("运动速度", fontSize = 14.sp, color = Color.Black)
+                    Text(stringResource(R.string.route_sim_speed_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
     Text("${settings.speed} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                 }
 
@@ -526,7 +522,7 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("速度浮动", fontSize = 14.sp, color = Color.Black)
+                    Text(stringResource(R.string.route_sim_speed_fluctuation), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                     Switch(
                         checked = settings.speedFluctuation,
                         onCheckedChange = { onSettingsChange(settings.copy(speedFluctuation = it)) },
@@ -544,14 +540,14 @@ fun SettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("步频模拟", fontSize = 14.sp, color = if (canUseStepFreq) Color.Black else Color.Gray)
+                    Text(stringResource(R.string.route_sim_step_text), fontSize = 14.sp, color = if (canUseStepFreq) MaterialTheme.colorScheme.onSurface else Color.Gray)
                     Switch(
                         checked = settings.stepFreqSimulation,
                         onCheckedChange = { 
                             if (!canUseStepFreq) {
                                 android.widget.Toast.makeText(
                                     context, 
-                                    "步频模拟需要 ROOT 模式",
+                                    context.getString(R.string.vm_step_root_required),
                                     android.widget.Toast.LENGTH_SHORT
                                 ).show()
                             } else {
@@ -581,8 +577,8 @@ fun SettingsDialog(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("步频", fontSize = 14.sp, color = Color.Black)
-                        Text("${settings.stepCadenceSpm.toInt()} 步/分钟 · 约 ${((kmh * 10).toInt() / 10f)} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(R.string.route_sim_cadence_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                        Text(stringResource(R.string.route_sim_cadence_format, settings.stepCadenceSpm.toInt(), ((kmh * 10).toInt() / 10f)), fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                     }
                     Slider(
                         value = settings.stepCadenceSpm,

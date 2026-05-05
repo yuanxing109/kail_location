@@ -61,10 +61,14 @@ fun LocationSimulationScreen(
     locationInfo: LocationSimulationViewModel.LocationInfo,
     isSimulating: Boolean,
     isJoystickEnabled: Boolean,
+    stepSimulationEnabled: Boolean,
+    stepCadenceSpm: Float,
     historyRecords: List<HistoryRecord>,
     selectedRecordId: Int?,
     onToggleSimulation: () -> Unit,
     onJoystickToggle: (Boolean) -> Unit,
+    onStepSimulationToggle: (Boolean) -> Unit,
+    onStepCadenceChange: (Float) -> Unit,
     onRecordSelect: (HistoryRecord) -> Unit,
     onRecordDelete: (Int) -> Unit,
     onRecordRename: (Int, String) -> Unit,
@@ -137,7 +141,6 @@ fun LocationSimulationScreen(
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(Color(0xFFF5F5F5)) // Light gray background
             ) {
                 // Target Location Card
                 Box(
@@ -148,9 +151,8 @@ fun LocationSimulationScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp), // Space for the + button overlap
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                            .padding(top = 16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp)
@@ -216,6 +218,50 @@ fun LocationSimulationScreen(
                                     onCheckedChange = onJoystickToggle,
                                     modifier = Modifier.scale(0.8f)
                                 )
+                            }
+
+                            if (runMode == "root") {
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(stringResource(R.string.route_sim_step_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                                    Switch(
+                                        checked = stepSimulationEnabled,
+                                        onCheckedChange = onStepSimulationToggle,
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = Color.White,
+                                            checkedTrackColor = MaterialTheme.colorScheme.primary
+                                        ),
+                                        modifier = Modifier.scale(0.8f)
+                                    )
+                                }
+
+                                if (stepSimulationEnabled) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    val stepsPerSecond = (stepCadenceSpm / 60f)
+                                    val kmh = (stepsPerSecond * 0.7f * 3.6f)
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(stringResource(R.string.route_sim_cadence_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                                        Text("${stepCadenceSpm.toInt()} 步/分钟 · 约 ${((kmh * 10).toInt() / 10f)} km/h", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                                    }
+                                    Slider(
+                                        value = stepCadenceSpm,
+                                        onValueChange = { onStepCadenceChange((it + 0.5f).toInt().toFloat()) },
+                                        valueRange = 60f..180f,
+                                        steps = 11,
+                                        colors = SliderDefaults.colors(
+                                            thumbColor = MaterialTheme.colorScheme.primary,
+                                            activeTrackColor = MaterialTheme.colorScheme.primary
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -284,7 +330,7 @@ fun LocationSimulationScreen(
                     ) {
                         items(historyRecords) { record ->
                             Card(
-                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                colors = CardDefaults.cardColors(),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                                 shape = RoundedCornerShape(8.dp),
                                 modifier = Modifier.fillMaxWidth().clickable { onRecordSelect(record) }
@@ -295,7 +341,7 @@ fun LocationSimulationScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
-                                        Text(text = record.name, fontSize = 16.sp, color = Color.Black)
+                                        Text(text = record.name, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
                                         Text(text = record.displayTime, fontSize = 12.sp, color = Color.Gray)
                                     }
                                     Row {
@@ -308,6 +354,9 @@ fun LocationSimulationScreen(
                                     }
                                 }
                             }
+                        }
+                        item {
+                            com.kail.location.ads.NativeAdCard()
                         }
                     }
                 }
@@ -334,10 +383,10 @@ fun LocationSimulationScreen(
                 OutlinedTextField(value = renameText, onValueChange = { renameText = it })
             },
             confirmButton = {
-                TextButton(onClick = { onRecordRename(renameTarget!!.id, renameText); renameTarget = null }) { Text("确定") }
+                TextButton(onClick = { onRecordRename(renameTarget!!.id, renameText); renameTarget = null }) { Text(stringResource(R.string.common_ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { renameTarget = null }) { Text("取消") }
+                TextButton(onClick = { renameTarget = null }) { Text(stringResource(R.string.common_cancel)) }
             }
         )
     }

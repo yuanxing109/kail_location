@@ -22,15 +22,15 @@ local.properties
 .idea/
 .vs/
 *.iml
-
+# Release output
+/app/release/
 # Build outputs
 app/build/
 app/.cxx/
 app/.externalNativeBuild/
-gradle/
-gradlew
-gradlew.bat
 
+
+docs/
 # Keystore
 *.jks
 *.keystore

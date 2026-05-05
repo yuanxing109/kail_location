@@ -1,6 +1,5 @@
 package com.kail.location.views.nfcsimulation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.kail.location.R
 import com.kail.location.views.common.AppDrawer
@@ -75,12 +75,12 @@ fun NfcSimulationScreen(
     showRenameDialog?.let { id ->
         AlertDialog(
             onDismissRequest = { showRenameDialog = null },
-            title = { Text("重命名") },
+            title = { Text(stringResource(R.string.nfc_sim_rename_dialog_title)) },
             text = {
                 OutlinedTextField(
                     value = renameText,
                     onValueChange = { renameText = it },
-                    label = { Text("名称") },
+                    label = { Text(stringResource(R.string.nfc_sim_rename_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -90,12 +90,12 @@ fun NfcSimulationScreen(
                     viewModel.renameHistory(id, renameText)
                     showRenameDialog = null
                 }) {
-                    Text("确定")
+                    Text(stringResource(R.string.nfc_sim_rename_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showRenameDialog = null }) {
-                    Text("取消")
+                    Text(stringResource(R.string.nfc_sim_rename_cancel))
                 }
             }
         )
@@ -119,7 +119,7 @@ fun NfcSimulationScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("NFC模拟") },
+                    title = { Text(stringResource(R.string.nfc_sim_title)) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -142,7 +142,6 @@ fun NfcSimulationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(Color(0xFFF5F5F5))
             ) {
                 // NFC Status
                 item {
@@ -150,8 +149,7 @@ fun NfcSimulationScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(
                             modifier = Modifier
@@ -167,10 +165,10 @@ fun NfcSimulationScreen(
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "NFC状态", fontWeight = FontWeight.Bold)
+                                Text(text = stringResource(R.string.nfc_sim_status), fontWeight = FontWeight.Bold)
                             }
                             Text(
-                                text = if (nfcEnabled) "正常" else "未开启",
+                                text = if (nfcEnabled) stringResource(R.string.nfc_sim_enabled) else stringResource(R.string.nfc_sim_disabled),
                                 color = if (nfcEnabled) Color(0xFF4CAF50) else Color.Red,
                                 fontWeight = FontWeight.Bold
                             )
@@ -185,8 +183,7 @@ fun NfcSimulationScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Row(
@@ -202,20 +199,20 @@ fun NfcSimulationScreen(
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "读取成功",
+                                            text = stringResource(R.string.nfc_sim_read_success),
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF4CAF50)
                                         )
                                     }
                                     TextButton(onClick = { viewModel.clearTag() }) {
-                                        Text("清除", color = Color.Red)
+                                        Text(stringResource(R.string.nfc_sim_clear), color = Color.Red)
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Text(text = "标签ID: $tagId", fontSize = 14.sp)
-                                Text(text = "标签类型: $tagType", fontSize = 14.sp, color = Color.Gray)
+                                Text(text = stringResource(R.string.nfc_sim_tag_id, tagId ?: ""), fontSize = 14.sp)
+                                Text(text = stringResource(R.string.nfc_sim_tag_type, tagType ?: ""), fontSize = 14.sp, color = Color.Gray)
                                 ndefContent?.let {
-                                    Text(text = "内容: $it", fontSize = 14.sp, color = Color.Gray, maxLines = 2)
+                                    Text(text = stringResource(R.string.nfc_sim_content, it), fontSize = 14.sp, color = Color.Gray, maxLines = 2)
                                 }
                             }
                         }
@@ -228,8 +225,7 @@ fun NfcSimulationScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -240,7 +236,7 @@ fun NfcSimulationScreen(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "模拟NFC发送",
+                                    text = stringResource(R.string.nfc_sim_send_title),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
                                 )
@@ -250,7 +246,7 @@ fun NfcSimulationScreen(
                             OutlinedTextField(
                                 value = urlInput,
                                 onValueChange = { urlInput = it },
-                                label = { Text("URL地址") },
+                                label = { Text(stringResource(R.string.nfc_sim_url)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 shape = RoundedCornerShape(8.dp)
@@ -261,7 +257,7 @@ fun NfcSimulationScreen(
                             OutlinedTextField(
                                 value = packageInput,
                                 onValueChange = { packageInput = it },
-                                label = { Text("应用包名") },
+                                label = { Text(stringResource(R.string.nfc_sim_package)) },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 shape = RoundedCornerShape(8.dp)
@@ -281,7 +277,7 @@ fun NfcSimulationScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.Send, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("发送")
+                                Text(stringResource(R.string.nfc_sim_send))
                             }
                         }
                     }
@@ -297,13 +293,13 @@ fun NfcSimulationScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "历史记录",
+                            text = stringResource(R.string.nfc_sim_history),
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                         if (historyRecords.isNotEmpty()) {
                             TextButton(onClick = { viewModel.clearHistory() }) {
-                                Text("清空", color = Color.Red)
+                                Text(stringResource(R.string.nfc_sim_clear_history), color = Color.Red)
                             }
                         }
                     }
@@ -319,7 +315,7 @@ fun NfcSimulationScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "暂无历史记录",
+                                text = stringResource(R.string.nfc_sim_no_history),
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center
                             )
@@ -332,8 +328,7 @@ fun NfcSimulationScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
                                 .clickable { viewModel.applyFromHistory(item) },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -354,12 +349,12 @@ fun NfcSimulationScreen(
                                         text = item.content,
                                         fontSize = 14.sp,
                                         maxLines = 2,
-                                        color = if (item.name.isNotBlank()) Color.Gray else Color.Black
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (item.name.isNotBlank()) 0.6f else 0.87f)
                                     )
                                     Text(
                                         text = "${item.type} • ${formatTime(item.timestamp)}",
                                         fontSize = 12.sp,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )
                                 }
                                 IconButton(onClick = {
@@ -368,14 +363,14 @@ fun NfcSimulationScreen(
                                 }) {
                                     Icon(
                                         imageVector = Icons.Default.Edit,
-                                        contentDescription = "重命名",
+                                        contentDescription = stringResource(R.string.nfc_sim_rename_content_desc),
                                         tint = Color.Gray
                                     )
                                 }
                                 IconButton(onClick = { viewModel.deleteHistory(item.id) }) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
-                                        contentDescription = "删除",
+                                        contentDescription = stringResource(R.string.nfc_sim_delete_content_desc),
                                         tint = Color.Red
                                     )
                                 }
@@ -395,19 +390,22 @@ fun NfcSimulationScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "使用说明",
+                                text = stringResource(R.string.nfc_sim_help_title),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "1. 扫描：靠近NFC标签自动读取\n2. 发送：填入URL/包名后点击发送\n3. 历史：点击自动填入，长按重命名",
+                                text = stringResource(R.string.nfc_sim_help_content),
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                             )
                         }
                     }
+                }
+                item {
+                    com.kail.location.ads.NativeAdCard()
                 }
             }
         }

@@ -37,6 +37,8 @@ class LocationSimulationActivity : BaseActivity() {
                 val locationInfo by viewModel.locationInfo.collectAsState()
                 val isSimulating by viewModel.isSimulating.collectAsState()
                 val isJoystickEnabled by viewModel.isJoystickEnabled.collectAsState()
+                val stepSimulationEnabled by viewModel.stepSimulationEnabled.collectAsState()
+                val stepCadenceSpm by viewModel.stepCadenceSpm.collectAsState()
                 val historyRecords by viewModel.historyRecords.collectAsState()
                 val selectedRecordId by viewModel.selectedRecordId.collectAsState()
                 val runMode by viewModel.runMode.collectAsState()
@@ -47,10 +49,14 @@ class LocationSimulationActivity : BaseActivity() {
                     locationInfo = locationInfo,
                     isSimulating = isSimulating,
                     isJoystickEnabled = isJoystickEnabled,
+                    stepSimulationEnabled = stepSimulationEnabled,
+                    stepCadenceSpm = stepCadenceSpm,
                     historyRecords = historyRecords,
                     selectedRecordId = selectedRecordId,
                     onToggleSimulation = viewModel::toggleSimulation,
                     onJoystickToggle = viewModel::setJoystickEnabled,
+                    onStepSimulationToggle = viewModel::setStepSimulationEnabled,
+                    onStepCadenceChange = viewModel::setStepCadenceSpm,
                     onRecordSelect = viewModel::selectRecord,
                     onRecordDelete = viewModel::deleteRecord,
                     onRecordRename = viewModel::renameRecord,
@@ -81,18 +87,18 @@ class LocationSimulationActivity : BaseActivity() {
                                     val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    Toast.makeText(this, "无法打开开发者选项", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, getString(R.string.app_error_dev), Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_contact -> {
                                 try {
                                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                                         data = android.net.Uri.parse("mailto:kailkali23143@gmail.com")
-                                        putExtra(Intent.EXTRA_SUBJECT, "联系作者")
+                                        putExtra(Intent.EXTRA_SUBJECT, getString(R.string.nav_menu_contact))
                                     }
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    Toast.makeText(this, "无法打开邮件应用", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, getString(R.string.error_cannot_open_email), Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_source_code -> {
@@ -100,7 +106,7 @@ class LocationSimulationActivity : BaseActivity() {
                                     val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/noellegazelle6/kail_location"))
                                     startActivity(intent)
                                 } catch (e: Exception) {
-                                    Toast.makeText(this, "无法打开浏览器", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, getString(R.string.error_cannot_open_browser), Toast.LENGTH_SHORT).show()
                                 }
                             }
                             R.id.nav_update -> {
@@ -108,7 +114,7 @@ class LocationSimulationActivity : BaseActivity() {
                             }
                             // Add other navigation cases as needed
                             else -> {
-                                Toast.makeText(this, "功能开发中...", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, getString(R.string.error_under_development), Toast.LENGTH_SHORT).show()
                             }
                         }
                     },

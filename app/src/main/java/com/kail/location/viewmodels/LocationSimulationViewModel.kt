@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
 import androidx.core.content.ContextCompat
+import com.kail.location.R
 import com.kail.location.service.ServiceGoRoot
 import com.kail.location.service.ServiceGoNoroot
 import com.kail.location.views.locationpicker.LocationPickerActivity
@@ -83,13 +84,31 @@ class LocationSimulationViewModel(application: Application) : AndroidViewModel(a
     private val _runMode = MutableStateFlow("noroot")
     val runMode: StateFlow<String> = _runMode.asStateFlow()
 
+    private val _stepSimulationEnabled = MutableStateFlow(false)
+    val stepSimulationEnabled: StateFlow<Boolean> = _stepSimulationEnabled.asStateFlow()
+
+    private val _stepCadenceSpm = MutableStateFlow(120f)
+    val stepCadenceSpm: StateFlow<Float> = _stepCadenceSpm.asStateFlow()
+
     init {
         _runMode.value = sharedPreferences.getString("setting_run_mode", "noroot") ?: "noroot"
         _isJoystickEnabled.value = sharedPreferences.getBoolean("setting_joystick_enabled", true)
+        _stepSimulationEnabled.value = sharedPreferences.getBoolean("setting_step_simulation_enabled", false)
+        _stepCadenceSpm.value = sharedPreferences.getFloat("setting_step_cadence_spm", 120f)
         try {
             db = dbHelper.writableDatabase
             loadRecords()
         } catch (_: Exception) {}
+    }
+
+    fun setStepSimulationEnabled(enabled: Boolean) {
+        _stepSimulationEnabled.value = enabled
+        sharedPreferences.edit().putBoolean("setting_step_simulation_enabled", enabled).apply()
+    }
+
+    fun setStepCadenceSpm(spm: Float) {
+        _stepCadenceSpm.value = spm
+        sharedPreferences.edit().putFloat("setting_step_cadence_spm", spm).apply()
     }
 
     fun setRunMode(mode: String) {
@@ -130,15 +149,22 @@ class LocationSimulationViewModel(application: Application) : AndroidViewModel(a
             val intent = Intent(app, serviceClass)
             intent.putExtra(LocationPickerActivity.LNG_MSG_ID, info.longitude)
             intent.putExtra(LocationPickerActivity.LAT_MSG_ID, info.latitude)
-            intent.putExtra(LocationPickerActivity.ALT_MSG_ID, 55.0)
+            intent.putExtra(LocationPickerActivity.ALT_MSG_ID, sharedPreferences.getString("setting_altitude", "55.0")?.toDoubleOrNull() ?: 55.0)
             intent.putExtra(extraJoystickEnabled, isJoystickEnabled.value)
             intent.putExtra(extraCoordType, "BD09")
             intent.putExtra("EXTRA_IS_ROUTE_SIMULATION", false)
             
+            if (currentRunMode == "root") {
+                val stepEnabled = _stepSimulationEnabled.value
+                val cadence = _stepCadenceSpm.value
+                intent.putExtra(ServiceGoRoot.EXTRA_STEP_ENABLED, stepEnabled)
+                intent.putExtra(ServiceGoRoot.EXTRA_STEP_FREQ, cadence)
+            }
+            
             if (ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 ContextCompat.startForegroundService(app, intent)
             } else {
-                GoUtils.DisplayToast(app, "需要位置权限才能启动模拟")
+                GoUtils.DisplayToast(app, app.getString(R.string.vm_need_location_permission))
                 return
             }
             _isSimulating.value = true
@@ -187,9 +213,9 @@ class LocationSimulationViewModel(application: Application) : AndroidViewModel(a
                     // Use MainExecutor to show toast
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
                         if (error != null) {
-                            Toast.makeText(context, "检查更新失败: $error", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_update_failed, error), Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "当前已是最新版本", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.vm_up_to_date), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

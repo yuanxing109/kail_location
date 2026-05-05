@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import com.baidu.mapapi.model.LatLng
+import com.kail.location.R
 import com.kail.location.repositories.RootMockRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -150,7 +151,7 @@ class LocationPickerViewModel(application: Application) : AndroidViewModel(appli
             suggestionSearch.requestSuggestion(
                 com.baidu.mapapi.search.sug.SuggestionSearchOption()
                     .keyword(keyword)
-                    .city(city ?: "全国")
+                    .city(city ?: getApplication<Application>().getString(R.string.vm_search_city))
             )
         } catch (e: Exception) {
             e.printStackTrace()

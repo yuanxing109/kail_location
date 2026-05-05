@@ -209,8 +209,8 @@ class WelcomeActivity : AppCompatActivity() {
     private fun showPermissionSettingsDialog() {
         android.app.AlertDialog.Builder(this)
             .setTitle(R.string.app_name)
-            .setMessage("KailLocationo需要位置权限才能运行。\n请点击“去设置”手动开启位置权限。")
-            .setPositiveButton("去设置") { _, _ ->
+            .setMessage(getString(R.string.app_error_permission))
+            .setPositiveButton(getString(R.string.goutils_settings)) { _, _ ->
                 try {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     intent.data = Uri.parse("package:$packageName")
@@ -220,7 +220,7 @@ class WelcomeActivity : AppCompatActivity() {
                     GoUtils.DisplayToast(this, "无法打开设置页面，请手动开启")
                 }
             }
-            .setNegativeButton("取消", null)
+            .setNegativeButton(getString(R.string.common_cancel), null)
             .show()
     }
 
